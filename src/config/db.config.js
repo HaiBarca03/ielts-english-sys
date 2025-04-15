@@ -12,7 +12,8 @@ const sequelize = new Sequelize(
     logging: false,
     dialectOptions: {
       connectTimeout: 10000
-    }
+    },
+    dialectModule: require('mysql2')
   }
 )
 

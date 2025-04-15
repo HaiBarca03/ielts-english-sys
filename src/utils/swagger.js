@@ -9,6 +9,7 @@ const {
   ProgramBaseProperties
 } = require('../swagger/program.schemas')
 
+require('dotenv').config()
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
@@ -63,7 +64,10 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'http://localhost:5000/api/v1'
+      url:
+        process.env.NODE_ENV === 'production'
+          ? 'https://ielts-english-sys.vercel.app/api/v1'
+          : 'http://localhost:5000/api/v1'
     }
   ],
   tags: [

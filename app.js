@@ -1,10 +1,13 @@
 const express = require('express')
+const cors = require('cors')
 const indexRouter = require('./src/routes/indexRouter')
 const swaggerSetup = require('./src/config/swagger.config')
 
 // app
 const app = express()
 app.use(express.json())
+app.use(cors())
+app.use(express.static('public'))
 
 // env
 const API_PREFIX = process.env.API_PREFIX || '/api'
