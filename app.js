@@ -6,7 +6,13 @@ const swaggerSetup = require('./src/config/swagger.config')
 // app
 const app = express()
 app.use(express.json())
-app.use(cors())
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
+  })
+)
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
 
