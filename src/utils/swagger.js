@@ -15,6 +15,11 @@ const {
   ProgramBaseProperties
 } = require('../swagger/program.schemas')
 const {
+  ScheduleCreateSchema,
+  ScheduleUpdateSchema,
+  ScheduleBaseProperties
+} = require('../swagger/schedule.schema')
+const {
   UserUpdateSchema,
   UserRegisterSchema,
   UserBaseProperties,
@@ -113,6 +118,27 @@ const swaggerDefinition = {
             description: 'ID class'
           },
           ...ClassBaseProperties,
+          createdAt: {
+            type: 'string',
+            format: 'date-time'
+          },
+          updatedAt: {
+            type: 'string',
+            format: 'date-time'
+          }
+        }
+      },
+      // Các schema cho schedule
+      ScheduleCreate: ScheduleCreateSchema,
+      ScheduleUpdate: ScheduleUpdateSchema,
+      Schedule: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            description: 'ID class'
+          },
+          ...ScheduleBaseProperties,
           createdAt: {
             type: 'string',
             format: 'date-time'

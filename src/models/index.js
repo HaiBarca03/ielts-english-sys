@@ -4,6 +4,7 @@ const Program = require('./Program')
 const Content = require('./Content')
 const Image = require('./Images')
 const Class = require('./Class')
+const Schedule = require('./Schedule')
 
 const db = {
   sequelize,
@@ -11,7 +12,8 @@ const db = {
   Program,
   Content,
   Image,
-  Class
+  Class,
+  Schedule
 }
 
 require('./associateModels')(db)
