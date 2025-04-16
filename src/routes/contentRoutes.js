@@ -1,3 +1,24 @@
+const express = require('express')
+const router = express.Router()
+const {
+  getAllContents,
+  getContentById,
+  createContent,
+  updateContent,
+  deleteContent,
+  getContentsByProgram
+} = require('../controllers/ContentController')
+const { uploadFiles } = require('../middlewares/uploadCloudinary')
+
+router.get('/', getAllContents)
+router.get('/program/:programId', getContentsByProgram)
+router.get('/:id', getContentById)
+router.post('/', uploadFiles, createContent)
+router.put('/:id', uploadFiles, updateContent)
+router.delete('/:id', deleteContent)
+
+module.exports = router
+
 /**
  * @swagger
  * tags:
@@ -9,11 +30,24 @@
  * @swagger
  * /contents:
  *   get:
- *     summary: Get all contents
+ *     summary: Get all contents with pagination
  *     tags: [Contents]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number (default is 1)
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         description: Number of items per page (default is 10)
+ *         schema:
+ *           type: integer
  *     responses:
  *       200:
- *         description: List of contents
+ *         description: Paginated list of all contents
  */
 
 /**
@@ -98,8 +132,8 @@
  * @swagger
  * /contents/program/{programId}:
  *   get:
- *     summary: Get contents by Program ID with optional type filter
- *     tags: [Content]
+ *     summary: Get contents by Program ID with optional type filter and pagination
+ *     tags: [Contents]
  *     parameters:
  *       - in: path
  *         name: programId
@@ -114,27 +148,19 @@
  *         schema:
  *           type: string
  *           enum: [Lesson, Test, Practice]
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number (default is 1)
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         description: Number of items per page (default is 10)
+ *         schema:
+ *           type: integer
  *     responses:
  *       200:
- *         description: List of contents by program
+ *         description: Paginated list of contents by program
  */
-
-const express = require('express')
-const router = express.Router()
-const {
-  getAllContents,
-  getContentById,
-  createContent,
-  updateContent,
-  deleteContent,
-  getContentsByProgram
-} = require('../controllers/ContentController')
-
-router.get('/', getAllContents)
-router.get('/program/:programId', getContentsByProgram)
-router.get('/:id', getContentById)
-router.post('/', createContent)
-router.put('/:id', updateContent)
-router.delete('/:id', deleteContent)
-
-module.exports = router

@@ -1,4 +1,4 @@
-const Program = require('../models/Program')
+const { Content, Program, Image } = require('../models')
 
 const checkProgramExists = async (brand_name) => {
   return await Program.findOne({
@@ -6,8 +6,21 @@ const checkProgramExists = async (brand_name) => {
   })
 }
 
-const getAllPrograms = async () => {
-  return await Program.findAll()
+const getAllPrograms = async (page = 1, limit = 10) => {
+  const offset = (parseInt(page) - 1) * parseInt(limit)
+
+  const { count, rows } = await Program.findAndCountAll({
+    offset,
+    limit: parseInt(limit),
+    order: [['created_at', 'DESC']]
+  })
+
+  return {
+    currentPage: parseInt(page),
+    totalPages: Math.ceil(count / limit),
+    totalItems: count,
+    items: rows
+  }
 }
 
 const getProgramById = async (id) => {
