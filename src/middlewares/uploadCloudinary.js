@@ -13,13 +13,7 @@ const upload = multer({
 
 const uploadImages = upload.array('images', 10)
 
-const uploadImage = (req, res, next) => {
-  if (!req.files || Object.keys(req.files).length === 0) {
-    return next()
-  }
-
-  upload.single('avatar')(req, res, next)
-}
+const uploadImage = upload.single('avatar')
 
 const uploadDocuments = (req, res, next) => {
   if (!req.files || Object.keys(req.files).length === 0) {
