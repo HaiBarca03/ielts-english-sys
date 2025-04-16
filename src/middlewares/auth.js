@@ -9,6 +9,7 @@ if (!process.env.JWT_SECRET) {
 const verifyToken = async (req) => {
   try {
     const authHeader = req.headers.token || req.headers.authorization
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new Error('Access token missing. token denied.')
     }
@@ -18,7 +19,7 @@ const verifyToken = async (req) => {
 
     const user = await User.findByPk(decoded.user_id)
     if (!user) {
-      throw new Error('User not found')
+      throw new Error('User not founddd')
     }
 
     return { user, decoded }
