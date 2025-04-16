@@ -1,4 +1,4 @@
-const { Content, Program, Image, User } = require('../models')
+const { Content, Program, Image, User, Class } = require('../models')
 
 const findUserByEmail = async (email) => {
   return await User.findOne({ where: { email } })
@@ -34,10 +34,23 @@ const deleteUserById = async (id) => {
   return await User.destroy({ where: { user_id: id } })
 }
 
+const getUserClasses = async (userId) => {
+  const user = await User.findByPk(userId, {
+    include: [
+      {
+        model: Class,
+        include: [Program]
+      }
+    ]
+  })
+  return user.Classes
+}
+
 module.exports = {
   findUserByEmail,
   createUser,
   findUserById,
   updateUser,
-  deleteUserById
+  deleteUserById,
+  getUserClasses
 }

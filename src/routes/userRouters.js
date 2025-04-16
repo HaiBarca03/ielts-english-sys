@@ -5,7 +5,9 @@ const {
   getUserById,
   getProfile,
   updateUser,
-  deleteUser
+  deleteUser,
+  getClassByUser,
+  getContentForUser
 } = require('../controllers/UserController')
 const { authorizeAdmin, authorizeUser } = require('../middlewares/auth')
 const { uploadFiles } = require('../middlewares/uploadCloudinary')
@@ -14,9 +16,11 @@ const router = express.Router()
 router.post('/register', authorizeAdmin, uploadFiles, registerUser)
 router.post('/login', loginUser)
 router.get('/profile', authorizeUser, getProfile)
+router.get('/user-class/:userId', authorizeAdmin, getClassByUser)
 router.put('/:id', authorizeUser, uploadFiles, updateUser)
 router.get('/:id', getUserById)
 router.delete('/:id', authorizeAdmin, deleteUser)
+router.get('/:userId/content', getContentForUser)
 
 module.exports = router
 
@@ -25,6 +29,41 @@ module.exports = router
  * tags:
  *   name: Users
  *   description: API for managing Users
+ */
+
+/**
+ * @swagger
+ * /account/{userId}/content:
+ *   get:
+ *     summary: Get content class by user
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: user ID
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number (default is 1)
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         description: Number of items per page (default is 10)
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: type
+ *         required: false
+ *         description: Filter by content type (Lesson, Test, Practice)
+ *         schema:
+ *           type: string
+ *           enum: [Lesson, Test, Practice]
+ *     responses:
+ *       200:
+ *         description: Class by user
  */
 
 /**
@@ -141,4 +180,20 @@ module.exports = router
  *     responses:
  *       200:
  *         description: A single user
+ */
+
+/**
+ * @swagger
+ * /account/user-class/{userId}:
+ *   get:
+ *     summary: Get class by user
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: user ID
+ *     responses:
+ *       200:
+ *         description: Class by user
  */

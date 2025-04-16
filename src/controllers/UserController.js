@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const UserService = require('../services/UserService')
+const ContentService = require('../services/ContentService')
 const imageService = require('../services/ImageService')
 const { uploadToCloud } = require('../utils/cloudUpload')
 const cloudinary = require('cloudinary').v2
@@ -209,11 +210,59 @@ const deleteUser = async (req, res) => {
   }
 }
 
+const getClassByUser = async (req, res) => {
+  const { userId } = req.params
+  try {
+    const userClass = await UserService.getUserClasses(userId)
+
+    return res.status(200).json({ userClass: userClass })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: 'Server error' })
+  }
+}
+
+const getContentForUser = async (req, res) => {
+  try {
+    const { userId } = req.params
+    const { type, page, limit } = req.query
+
+    const userClasses = await UserService.getUserClasses(userId)
+
+    if (!userClasses || userClasses.length === 0) {
+      return res
+        .status(404)
+        .json({ message: 'User is not enrolled in any classes' })
+    }
+
+    const programId = userClasses[0].program_id
+
+    const contentData = await ContentService.getContentsByProgram(
+      programId,
+      type,
+      page,
+      limit
+    )
+
+    return res.status(200).json({
+      message: 'Content retrieved successfully',
+      data: contentData
+    })
+  } catch (error) {
+    console.error('Error retrieving content for user:', error)
+    return res.status(500).json({
+      message: 'Internal server error'
+    })
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
   getUserById,
   getProfile,
   updateUser,
-  deleteUser
+  deleteUser,
+  getClassByUser,
+  getContentForUser
 }
