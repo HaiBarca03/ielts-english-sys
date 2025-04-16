@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const { models } = require('../models')
+const { User } = require('../models')
 require('dotenv').config()
 
 if (!process.env.JWT_SECRET) {
@@ -8,7 +8,7 @@ if (!process.env.JWT_SECRET) {
 
 const verifyToken = async (req) => {
   try {
-    const authHeader = req.headers.token
+    const authHeader = req.headers.token || req.headers.authorization
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new Error('Access token missing. token denied.')
     }
@@ -16,7 +16,7 @@ const verifyToken = async (req) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
-    const user = await models.User.findByPk(decoded.id)
+    const user = await User.findByPk(decoded.user_id)
     if (!user) {
       throw new Error('User not found')
     }
