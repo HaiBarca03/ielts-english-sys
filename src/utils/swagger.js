@@ -101,7 +101,7 @@ const swaggerDefinition = {
     {
       url:
         process.env.NODE_ENV === 'production'
-          ? 'https://ielts-english-sys.vercel.app/api/v1'
+          ? 'https://ielts-english-sys.onrender.com/api/v1'
           : 'http://localhost:5000/api/v1'
     }
   ],
