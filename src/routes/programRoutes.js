@@ -9,11 +9,24 @@
  * @swagger
  * /programs:
  *   get:
- *     summary: Get all programs
+ *     summary: Get all programs with pagination
  *     tags: [Programs]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number (default is 1)
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         description: Number of items per page (default is 10)
+ *         schema:
+ *           type: integer
  *     responses:
  *       200:
- *         description: List of programs
+ *         description: Paginated list of programs
  */
 
 /**

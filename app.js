@@ -8,6 +8,7 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 app.use(express.static('public'))
+app.use(express.urlencoded({ extended: true }))
 
 // env
 const API_PREFIX = process.env.API_PREFIX || '/api'

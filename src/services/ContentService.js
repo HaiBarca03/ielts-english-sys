@@ -1,28 +1,60 @@
-const Content = require('../models/Content')
+const { Content, Program, Image } = require('../models')
 
-const getAllContents = async () => {
-  return await Content.findAll({
-    include: ['Program']
+const getAllContents = async (query) => {
+  const page = parseInt(query.page) || 1
+  const limit = parseInt(query.limit) || 10
+  const offset = (page - 1) * limit
+
+  const { count, rows } = await Content.findAndCountAll({
+    offset,
+    limit,
+    include: [
+      {
+        model: Program
+      }
+    ]
   })
+
+  return {
+    currentPage: page,
+    totalPages: Math.ceil(count / limit),
+    totalItems: count,
+    items: rows
+  }
 }
-const getContentsByProgram = async (programId, type) => {
-  const whereClause = {
-    program_id: programId
-  }
 
-  if (type) {
-    whereClause.type = type
-  }
+const getContentsByProgram = async (programId, type, page = 1, limit = 10) => {
+  const whereClause = { program_id: programId }
+  if (type) whereClause.type = type
 
-  return await Content.findAll({
+  const offset = (parseInt(page) - 1) * parseInt(limit)
+
+  const { count, rows } = await Content.findAndCountAll({
     where: whereClause,
+    offset,
+    limit: parseInt(limit),
     order: [['created_at', 'DESC']]
   })
+
+  return {
+    currentPage: parseInt(page),
+    totalPages: Math.ceil(count / limit),
+    totalItems: count,
+    items: rows
+  }
 }
 
 const getContentById = async (id) => {
   return await Content.findByPk(id, {
-    include: ['Program']
+    include: [
+      {
+        model: Program
+      },
+      {
+        model: Image,
+        as: 'Images'
+      }
+    ]
   })
 }
 

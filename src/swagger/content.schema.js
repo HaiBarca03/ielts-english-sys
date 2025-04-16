@@ -23,7 +23,7 @@ const ContentBaseProperties = {
   file_url: {
     type: 'string',
     description: 'URL của tệp (nếu có)',
-    example: 'http://example.com/file.mp4'
+    example: 'Upload một tài liệu lên bằng req.files, có thể bỏ trống'
   },
   youtube_url: {
     type: 'string',
@@ -34,6 +34,14 @@ const ContentBaseProperties = {
     type: 'integer',
     description: 'Thời gian của nội dung (phút)',
     example: 30
+  },
+  images: {
+    type: 'array',
+    example: 'Upload nhiều ảnh - dùng với req.files, có thể bỏ trống',
+    items: {
+      type: 'string',
+      format: 'binary'
+    }
   }
 }
 

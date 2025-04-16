@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize')
 const sequelize = require('../config/db.config')
 const Program = require('./Program')
+const Image = require('./Images')
 
 const Content = sequelize.define(
   'Content',
@@ -44,7 +45,5 @@ const Content = sequelize.define(
     timestamps: false
   }
 )
-
-Content.belongsTo(Program, { foreignKey: 'program_id' })
 
 module.exports = Content

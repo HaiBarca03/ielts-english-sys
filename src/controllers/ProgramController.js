@@ -1,8 +1,13 @@
 const programService = require('../services/ProgramService')
 
 const getAllPrograms = async (req, res) => {
-  const programs = await programService.getAllPrograms()
-  res.json(programs)
+  try {
+    const { page, limit } = req.query
+    const programs = await programService.getAllPrograms(page, limit)
+    res.json(programs)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
 }
 
 const getProgramById = async (req, res) => {
