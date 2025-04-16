@@ -64,7 +64,7 @@ module.exports = router
  *       - in: path
  *         name: class_id
  *         required: true
- *         description: Content ID
+ *         description: Class ID
  *     responses:
  *       200:
  *         description: A single content

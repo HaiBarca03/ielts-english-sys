@@ -1,4 +1,4 @@
-module.exports = ({ User, Program, Content, Class, Image }) => {
+module.exports = ({ User, Program, Content, Schedule, Class, Image }) => {
   Content.belongsTo(Program, { foreignKey: 'program_id' })
   Class.belongsTo(Program, { foreignKey: 'program_id' })
 
@@ -21,4 +21,7 @@ module.exports = ({ User, Program, Content, Class, Image }) => {
     otherKey: 'user_id',
     timestamps: false
   })
+
+  Schedule.belongsTo(Class, { foreignKey: 'class_id' })
+  Schedule.belongsTo(User, { foreignKey: 'teacher_id', as: 'Teacher' })
 }

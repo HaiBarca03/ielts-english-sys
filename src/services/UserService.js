@@ -46,11 +46,22 @@ const getUserClasses = async (userId) => {
   return user.Classes
 }
 
+const checkUser = async (user_id, role) => {
+  const user = await User.findOne({
+    where: {
+      user_id,
+      role
+    }
+  })
+  return user
+}
+
 module.exports = {
   findUserByEmail,
   createUser,
   findUserById,
   updateUser,
   deleteUserById,
-  getUserClasses
+  getUserClasses,
+  checkUser
 }
