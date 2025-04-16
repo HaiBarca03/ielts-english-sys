@@ -1,4 +1,10 @@
 const {
+  ClassUpdateSchema,
+  ClassCreateSchema,
+  ClassUserSchema,
+  ClassBaseProperties
+} = require('../swagger/class.schema')
+const {
   ContentCreateSchema,
   ContentUpdateSchema,
   ContentBaseProperties
@@ -85,6 +91,28 @@ const swaggerDefinition = {
             description: 'ID content'
           },
           ...UserBaseProperties,
+          createdAt: {
+            type: 'string',
+            format: 'date-time'
+          },
+          updatedAt: {
+            type: 'string',
+            format: 'date-time'
+          }
+        }
+      },
+      // Các schema cho class
+      ClassCreate: ClassCreateSchema,
+      ClassUpdate: ClassUpdateSchema,
+      ClassUserCreate: ClassUserSchema,
+      Class: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            description: 'ID class'
+          },
+          ...ClassBaseProperties,
           createdAt: {
             type: 'string',
             format: 'date-time'
