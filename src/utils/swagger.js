@@ -8,6 +8,12 @@ const {
   ProgramUpdateSchema,
   ProgramBaseProperties
 } = require('../swagger/program.schemas')
+const {
+  UserUpdateSchema,
+  UserRegisterSchema,
+  UserBaseProperties,
+  UserLoginSchema
+} = require('../swagger/user.schema')
 
 require('dotenv').config()
 const swaggerDefinition = {
@@ -18,6 +24,13 @@ const swaggerDefinition = {
     description: 'API for managing sys'
   },
   components: {
+    securitySchemes: {
+      BearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT'
+      }
+    },
     schemas: {
       ProgramCreate: ProgramCreateSchema,
       ProgramUpdate: ProgramUpdateSchema,
@@ -59,6 +72,28 @@ const swaggerDefinition = {
             format: 'date-time'
           }
         }
+      },
+      // Các schema cho User
+      UserCreate: UserRegisterSchema,
+      UserUpdate: UserUpdateSchema,
+      UserLogin: UserLoginSchema,
+      User: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            description: 'ID content'
+          },
+          ...UserBaseProperties,
+          createdAt: {
+            type: 'string',
+            format: 'date-time'
+          },
+          updatedAt: {
+            type: 'string',
+            format: 'date-time'
+          }
+        }
       }
     }
   },
@@ -68,6 +103,11 @@ const swaggerDefinition = {
         process.env.NODE_ENV === 'production'
           ? 'https://ielts-english-sys.vercel.app/api/v1'
           : 'http://localhost:5000/api/v1'
+    }
+  ],
+  security: [
+    {
+      BearerAuth: []
     }
   ],
   tags: [
