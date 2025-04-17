@@ -1,4 +1,9 @@
 const {
+  AttendanceBaseProperties,
+  AttendanceCreateSchema,
+  AttendanceUpdateSchema
+} = require('../swagger/attendance.schema')
+const {
   ClassUpdateSchema,
   ClassCreateSchema,
   ClassUserSchema,
@@ -139,6 +144,27 @@ const swaggerDefinition = {
             description: 'ID class'
           },
           ...ScheduleBaseProperties,
+          createdAt: {
+            type: 'string',
+            format: 'date-time'
+          },
+          updatedAt: {
+            type: 'string',
+            format: 'date-time'
+          }
+        }
+      },
+      // Các schema cho attendance
+      AttendanceCreate: AttendanceCreateSchema,
+      AttendanceUpdate: AttendanceUpdateSchema,
+      Attendance: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            description: 'ID attendance'
+          },
+          ...AttendanceBaseProperties,
           createdAt: {
             type: 'string',
             format: 'date-time'

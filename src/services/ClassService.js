@@ -1,5 +1,5 @@
 const { Op } = require('sequelize')
-const { Class, Program } = require('../models')
+const { Class, Program, User } = require('../models')
 
 const createClass = async (data) => {
   return await Class.create(data)
@@ -85,6 +85,20 @@ const removeUserFromClass = async (classInstance, userInstance) => {
   return true
 }
 
+const checkUserInClass = async (classId, userId) => {
+  const classWithUser = await Class.findOne({
+    where: { class_id: classId },
+    include: {
+      model: User,
+      where: { user_id: userId },
+      through: { attributes: [] },
+      attributes: ['user_id']
+    }
+  })
+
+  return classWithUser
+}
+
 module.exports = {
   createClass,
   getClassesByProgramId,
@@ -93,5 +107,6 @@ module.exports = {
   updateClass,
   deleteClass,
   addUserToClass,
-  removeUserFromClass
+  removeUserFromClass,
+  checkUserInClass
 }
