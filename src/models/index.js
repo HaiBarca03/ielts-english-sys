@@ -7,6 +7,7 @@ const Class = require('./Class')
 const Schedule = require('./Schedule')
 const Attendance = require('./Attendance')
 const Payment = require('./paymentModels')
+const Score = require('./Score')
 
 const db = {
   sequelize,
@@ -17,7 +18,8 @@ const db = {
   Class,
   Schedule,
   Attendance,
-  Payment
+  Payment,
+  Score
 }
 
 require('./associateModels')(db)

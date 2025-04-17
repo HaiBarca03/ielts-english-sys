@@ -7,7 +7,8 @@ const {
   updateUser,
   deleteUser,
   getClassByUser,
-  getContentForUser
+  getContentForUser,
+  getUserRoles
 } = require('../controllers/UserController')
 const { authorizeAdmin, authorizeUser } = require('../middlewares/auth')
 const { uploadFiles } = require('../middlewares/uploadCloudinary')
@@ -17,6 +18,7 @@ router.post('/register', authorizeAdmin, uploadFiles, registerUser)
 router.post('/login', loginUser)
 router.get('/profile', authorizeUser, getProfile)
 router.get('/user-class/:userId', authorizeAdmin, getClassByUser)
+router.get('/roles', getUserRoles)
 router.put('/:id', authorizeUser, uploadFiles, updateUser)
 router.get('/:id', getUserById)
 router.delete('/:id', authorizeAdmin, deleteUser)
@@ -29,6 +31,17 @@ module.exports = router
  * tags:
  *   name: Users
  *   description: API for managing Users
+ */
+
+/**
+ * @swagger
+ * /account/roles:
+ *   get:
+ *     summary: Get role by user
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Class by user
  */
 
 /**
