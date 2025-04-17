@@ -256,13 +256,22 @@ const getContentForUser = async (req, res) => {
   }
 }
 
-const getUserRoles = (req, res) => {
+const getUserRoles = async (req, res) => {
   try {
-    const roles = UserService.getUserRoles()
-    res.status(200).json({ roles })
+    const { role } = req.query
+
+    const users = await UserService.getUsersByRole(role)
+
+    if (users.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `No users found with role ${role}` })
+    }
+
+    res.status(200).json({ users })
   } catch (err) {
-    console.error('Error fetching user roles:', err)
-    res.status(500).json({ message: 'Failed to get roles' })
+    console.error('Error fetching users by role:', err)
+    res.status(500).json({ message: 'Failed to get users by role' })
   }
 }
 

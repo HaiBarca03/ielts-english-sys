@@ -10,7 +10,7 @@ const findUserById = async (user_id) => {
       include: [
         {
           model: Image,
-          as: 'Images'
+          attributes: ['image_id', 'public_id', 'url']
         }
       ]
     })
@@ -56,8 +56,25 @@ const checkUser = async (user_id, role) => {
   return user
 }
 
-const getUserRoles = () => {
-  return User.getAttributes().role.values
+const getUsersByRole = async (role) => {
+  const whereClause = {}
+  if (role) whereClause.role = role
+
+  try {
+    const users = await User.findAll({
+      where: whereClause,
+      include: [
+        {
+          model: Image,
+          attributes: ['image_id', 'public_id', 'url']
+        }
+      ]
+    })
+
+    return users
+  } catch (error) {
+    throw new Error('Error fetching users: ' + error.message)
+  }
 }
 
 module.exports = {
@@ -68,5 +85,5 @@ module.exports = {
   deleteUserById,
   getUserClasses,
   checkUser,
-  getUserRoles
+  getUsersByRole
 }

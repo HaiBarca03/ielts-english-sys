@@ -17,6 +17,10 @@ const Score = sequelize.define(
       type: DataTypes.CHAR(36),
       allowNull: false
     },
+    class_id: {
+      type: DataTypes.CHAR(36),
+      allowNull: false
+    },
     score: {
       type: DataTypes.FLOAT,
       allowNull: false

@@ -49,7 +49,9 @@ module.exports = ({
 
   Score.belongsTo(User, { foreignKey: 'user_id' })
   Score.belongsTo(Content, { foreignKey: 'content_id' })
+  Score.belongsTo(Class, { foreignKey: 'class_id' })
 
   User.hasMany(Score, { foreignKey: 'user_id' })
   Content.hasMany(Score, { foreignKey: 'content_id' })
+  Class.hasMany(Score, { foreignKey: 'class_id' })
 }
