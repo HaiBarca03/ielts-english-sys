@@ -30,6 +30,11 @@ const {
   ScheduleBaseProperties
 } = require('../swagger/schedule.schema')
 const {
+  ScoreCreateSchema,
+  ScoreUpdateSchema,
+  ScoreBaseProperties
+} = require('../swagger/score.schema')
+const {
   UserUpdateSchema,
   UserRegisterSchema,
   UserBaseProperties,
@@ -188,9 +193,30 @@ const swaggerDefinition = {
         properties: {
           id: {
             type: 'string',
-            description: 'ID attendance'
+            description: 'ID payment'
           },
           ...PaymentBaseProperties,
+          createdAt: {
+            type: 'string',
+            format: 'date-time'
+          },
+          updatedAt: {
+            type: 'string',
+            format: 'date-time'
+          }
+        }
+      },
+      // Các schema cho score
+      ScoreCreate: ScoreCreateSchema,
+      ScoreUpdate: ScoreUpdateSchema,
+      Score: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            description: 'ID score'
+          },
+          ...ScoreBaseProperties,
           createdAt: {
             type: 'string',
             format: 'date-time'

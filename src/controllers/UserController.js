@@ -256,6 +256,16 @@ const getContentForUser = async (req, res) => {
   }
 }
 
+const getUserRoles = (req, res) => {
+  try {
+    const roles = UserService.getUserRoles()
+    res.status(200).json({ roles })
+  } catch (err) {
+    console.error('Error fetching user roles:', err)
+    res.status(500).json({ message: 'Failed to get roles' })
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
@@ -264,5 +274,6 @@ module.exports = {
   updateUser,
   deleteUser,
   getClassByUser,
-  getContentForUser
+  getContentForUser,
+  getUserRoles
 }

@@ -56,6 +56,10 @@ const checkUser = async (user_id, role) => {
   return user
 }
 
+const getUserRoles = () => {
+  return User.getAttributes().role.values
+}
+
 module.exports = {
   findUserByEmail,
   createUser,
@@ -63,5 +67,6 @@ module.exports = {
   updateUser,
   deleteUserById,
   getUserClasses,
-  checkUser
+  checkUser,
+  getUserRoles
 }
