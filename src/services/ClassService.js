@@ -4,6 +4,7 @@ const { Class, Program, User } = require('../models')
 const createClass = async (data) => {
   return await Class.create(data)
 }
+
 const getAllClasses = async (
   status,
   startDate,
@@ -52,16 +53,55 @@ const getClassesByProgramId = async (programId) => {
   })
   return classes
 }
+
 const getClassInfo = async (classId) => {
   const classInfo = await Class.findOne({
     where: { class_id: classId },
     include: [
       {
         model: Program
+      },
+      {
+        model: User,
+        attributes: [
+          'user_id',
+          'role',
+          'name',
+          'email',
+          'phone',
+          'gender',
+          'dob',
+          'address',
+          'school'
+        ],
+        through: { attributes: [] }
       }
     ]
   })
-  return classInfo
+  const studentCount =
+    classInfo?.Users?.filter((user) => user.role === 'Student').length || 0
+
+  return {
+    ...classInfo.toJSON(),
+    studentCount
+  }
+}
+
+const countStudentsInClass = async (classId) => {
+  const classInfo = await Class.findByPk(classId, {
+    include: [
+      {
+        model: User,
+        where: { role: 'Student' },
+        attributes: ['user_id'],
+        through: { attributes: [] }
+      }
+    ]
+  })
+
+  const count = classInfo?.Users?.length || 0
+
+  return count
 }
 
 const updateClass = async (classId, updateData) => {
@@ -108,5 +148,6 @@ module.exports = {
   deleteClass,
   addUserToClass,
   removeUserFromClass,
-  checkUserInClass
+  checkUserInClass,
+  countStudentsInClass
 }

@@ -8,7 +8,8 @@ const {
   updateClass,
   deleteClass,
   addUserToClass,
-  deleteUserFromClass
+  deleteUserFromClass,
+  getStudentCount
 } = require('../controllers/ClassController')
 const {
   authorizeAdmin,
@@ -18,6 +19,11 @@ const {
 
 router.post('/', authorizeAdmin, createClass)
 router.get('/', authorizeAdmin, getAllClasses)
+router.get(
+  '/count-student-class/:class_id',
+  authorizeAdminTeacher,
+  getStudentCount
+)
 router.get('/program/:program_id', authorizeAdminTeacher, getClassesByProgram)
 router.get('/:class_id', authorizeUser, getClassInfo)
 router.put('/:id', authorizeAdmin, updateClass)
@@ -63,6 +69,22 @@ module.exports = router
  * /class/{class_id}:
  *   get:
  *     summary: Get a class info
+ *     tags: [Class]
+ *     parameters:
+ *       - in: path
+ *         name: class_id
+ *         required: true
+ *         description: Class ID
+ *     responses:
+ *       200:
+ *         description: A single content
+ */
+
+/**
+ * @swagger
+ * /class/count-student-class/{class_id}:
+ *   get:
+ *     summary: Count student a class
  *     tags: [Class]
  *     parameters:
  *       - in: path
