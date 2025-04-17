@@ -51,9 +51,12 @@ const getClassesByProgram = async (req, res) => {
     if (!program) {
       return res.status(404).json({ message: 'Program không tồn tại' })
     }
+
     const classes = await ClassService.getClassesByProgramId(program_id)
 
-    if (classes.length === 0) {
+    const classCount = classes.length
+
+    if (classCount === 0) {
       return res
         .status(404)
         .json({ message: 'No classes found for this program' })
@@ -61,6 +64,7 @@ const getClassesByProgram = async (req, res) => {
 
     return res.status(200).json({
       message: 'Classes retrieved successfully',
+      classCount,
       classes
     })
   } catch (error) {
@@ -109,7 +113,7 @@ const getAllClasses = async (req, res) => {
       message: 'All classes retrieved successfully',
       currentPage: pageNumber,
       totalPages,
-      totalItems,
+      totalClasses: totalItems,
       classes
     })
   } catch (error) {
@@ -226,6 +230,24 @@ const deleteUserFromClass = async (req, res) => {
   }
 }
 
+const getStudentCount = async (req, res) => {
+  const { class_id } = req.params
+
+  try {
+    const count = await ClassService.countStudentsInClass(class_id)
+
+    return res.status(200).json({
+      message: 'Student count retrieved successfully',
+      studentCount: count
+    })
+  } catch (error) {
+    console.error('Error getting student count:', error)
+    return res.status(500).json({
+      message: 'Internal server error'
+    })
+  }
+}
+
 module.exports = {
   createClass,
   getClassesByProgram,
@@ -234,5 +256,6 @@ module.exports = {
   updateClass,
   deleteClass,
   addUserToClass,
-  deleteUserFromClass
+  deleteUserFromClass,
+  getStudentCount
 }
