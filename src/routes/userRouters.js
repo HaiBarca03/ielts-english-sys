@@ -39,6 +39,14 @@ module.exports = router
  *   get:
  *     summary: Get role by user
  *     tags: [Users]
+ *     parameters:
+ *       - in: query
+ *         name: role
+ *         required: false
+ *         description: Filter by role type (Student, Teacher, Admin)
+ *         schema:
+ *           type: string
+ *           enum: [Student, Teacher, Admin]
  *     responses:
  *       200:
  *         description: Class by user

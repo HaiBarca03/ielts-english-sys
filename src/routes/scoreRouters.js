@@ -1,9 +1,18 @@
 const express = require('express')
 const router = express.Router()
-const { createScore, updateScore } = require('../controllers/ScoreController')
+const {
+  createScore,
+  updateScore,
+  getScoreByUser,
+  getScoresByClass,
+  deleteScoreById
+} = require('../controllers/ScoreController')
 
 router.post('/', createScore)
 router.put('/:score_id', updateScore)
+router.get('/user/:user_id', getScoreByUser)
+router.get('/class/:class_id', getScoresByClass)
+router.delete('/:score_id', deleteScoreById)
 
 module.exports = router
 
@@ -12,6 +21,96 @@ module.exports = router
  * tags:
  *   name: Scores
  *   description: API for managing score
+ */
+
+/**
+ * @swagger
+ * /score/{score_id}:
+ *   delete:
+ *     summary: Delete score by ID
+ *     tags: [Scores]
+ *     parameters:
+ *       - in: path
+ *         name: score_id
+ *         required: true
+ *         description: score ID
+ *     responses:
+ *       200:
+ *         description: score deleted successfully
+ */
+
+/**
+ * @swagger
+ * /score/class/{class_id}:
+ *   get:
+ *     summary: Get score by class ID with optional type filter and pagination
+ *     tags: [Scores]
+ *     parameters:
+ *       - in: path
+ *         name: class_id
+ *         required: true
+ *         description: ID of the class
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: type
+ *         required: false
+ *         description: Filter by content type (Lesson, Test, Practice)
+ *         schema:
+ *           type: string
+ *           enum: [Lesson, Test, Practice]
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number (default is 1)
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         description: Number of items per page (default is 10)
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Paginated list of contents by program
+ */
+
+/**
+ * @swagger
+ * /score/user/{user_id}:
+ *   get:
+ *     summary: Get score by user ID with optional type filter and pagination
+ *     tags: [Scores]
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         description: ID of the user
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: type
+ *         required: false
+ *         description: Filter by content type (Lesson, Test, Practice)
+ *         schema:
+ *           type: string
+ *           enum: [Lesson, Test, Practice]
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number (default is 1)
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         description: Number of items per page (default is 10)
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Paginated list of contents by program
  */
 
 /**
