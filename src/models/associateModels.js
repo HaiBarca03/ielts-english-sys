@@ -5,7 +5,8 @@ module.exports = ({
   Schedule,
   Class,
   Image,
-  Attendance
+  Attendance,
+  Payment
 }) => {
   Content.belongsTo(Program, { foreignKey: 'program_id' })
   Class.belongsTo(Program, { foreignKey: 'program_id' })
@@ -38,4 +39,10 @@ module.exports = ({
 
   Schedule.hasMany(Attendance, { foreignKey: 'schedule_id' })
   User.hasMany(Attendance, { foreignKey: 'user_id' })
+
+  Payment.belongsTo(User, { foreignKey: 'user_id' })
+  Payment.belongsTo(Program, { foreignKey: 'program_id' })
+
+  User.hasMany(Payment, { foreignKey: 'user_id' })
+  Program.hasMany(Payment, { foreignKey: 'program_id' })
 }

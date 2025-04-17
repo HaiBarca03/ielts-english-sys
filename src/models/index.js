@@ -6,6 +6,7 @@ const Image = require('./Images')
 const Class = require('./Class')
 const Schedule = require('./Schedule')
 const Attendance = require('./Attendance')
+const Payment = require('./paymentModels')
 
 const db = {
   sequelize,
@@ -15,7 +16,8 @@ const db = {
   Image,
   Class,
   Schedule,
-  Attendance
+  Attendance,
+  Payment
 }
 
 require('./associateModels')(db)
