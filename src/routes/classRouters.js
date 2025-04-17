@@ -10,15 +10,19 @@ const {
   addUserToClass,
   deleteUserFromClass
 } = require('../controllers/ClassController')
-const { authorizeAdmin } = require('../middlewares/auth')
+const {
+  authorizeAdmin,
+  authorizeAdminTeacher,
+  authorizeUser
+} = require('../middlewares/auth')
 
 router.post('/', authorizeAdmin, createClass)
-router.get('/', getAllClasses)
-router.get('/program/:program_id', getClassesByProgram)
-router.get('/:class_id', getClassInfo)
+router.get('/', authorizeAdmin, getAllClasses)
+router.get('/program/:program_id', authorizeAdminTeacher, getClassesByProgram)
+router.get('/:class_id', authorizeUser, getClassInfo)
 router.put('/:id', authorizeAdmin, updateClass)
 router.delete('/:id', authorizeAdmin, deleteClass)
-router.post('/add-user', addUserToClass)
+router.post('/add-user', authorizeAdmin, addUserToClass)
 router.delete('/:classId/user/:userId', authorizeAdmin, deleteUserFromClass)
 
 module.exports = router

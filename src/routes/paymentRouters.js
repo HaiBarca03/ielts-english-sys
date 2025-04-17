@@ -9,14 +9,15 @@ const {
   updatePayment,
   deletePayment
 } = require('../controllers/PaymentController')
+const { authorizeAdmin, authorizeUser } = require('../middlewares/auth')
 
-router.post('/', createPayment)
-router.get('/', getAllPayments)
-router.get('/user/:userId', getPaymentsByUser)
-router.get('/program/:programId', getPaymentsByProgram)
-router.get('/:paymentId', getPaymentById)
-router.put('/:paymentId', updatePayment)
-router.delete('/:paymentId', deletePayment)
+router.post('/', authorizeAdmin, createPayment)
+router.get('/', authorizeAdmin, getAllPayments)
+router.get('/user/:userId', authorizeAdmin, getPaymentsByUser)
+router.get('/program/:programId', authorizeAdmin, getPaymentsByProgram)
+router.get('/:paymentId', authorizeAdmin, getPaymentById)
+router.put('/:paymentId', authorizeAdmin, updatePayment)
+router.delete('/:paymentId', authorizeAdmin, deletePayment)
 
 module.exports = router
 

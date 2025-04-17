@@ -7,12 +7,13 @@ const {
   getScoresByClass,
   deleteScoreById
 } = require('../controllers/ScoreController')
+const { authorizeAdminTeacher, authorizeUser } = require('../middlewares/auth')
 
-router.post('/', createScore)
-router.put('/:score_id', updateScore)
-router.get('/user/:user_id', getScoreByUser)
-router.get('/class/:class_id', getScoresByClass)
-router.delete('/:score_id', deleteScoreById)
+router.post('/', authorizeAdminTeacher, createScore)
+router.put('/:score_id', authorizeAdminTeacher, updateScore)
+router.get('/user/:user_id', authorizeUser, getScoreByUser)
+router.get('/class/:class_id', authorizeAdminTeacher, getScoresByClass)
+router.delete('/:score_id', authorizeAdminTeacher, deleteScoreById)
 
 module.exports = router
 
