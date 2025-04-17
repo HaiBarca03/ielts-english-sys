@@ -9,13 +9,18 @@ const {
   getContentsByProgram
 } = require('../controllers/ContentController')
 const { uploadFiles } = require('../middlewares/uploadCloudinary')
+const {
+  authorizeAdmin,
+  authorizeUser,
+  authorizeAdminTeacher
+} = require('../middlewares/auth')
 
-router.get('/', getAllContents)
-router.get('/program/:programId', getContentsByProgram)
-router.get('/:id', getContentById)
-router.post('/', uploadFiles, createContent)
-router.put('/:id', uploadFiles, updateContent)
-router.delete('/:id', deleteContent)
+router.get('/', authorizeAdmin, getAllContents)
+router.get('/program/:programId', authorizeUser, getContentsByProgram)
+router.get('/:id', authorizeUser, getContentById)
+router.post('/', authorizeAdmin, uploadFiles, createContent)
+router.put('/:id', authorizeAdminTeacher, uploadFiles, updateContent)
+router.delete('/:id', authorizeAdmin, deleteContent)
 
 module.exports = router
 

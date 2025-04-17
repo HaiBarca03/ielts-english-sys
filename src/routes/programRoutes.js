@@ -1,3 +1,22 @@
+const express = require('express')
+const router = express.Router()
+const {
+  getAllPrograms,
+  getProgramById,
+  createProgram,
+  updateProgram,
+  deleteProgram
+} = require('../controllers/ProgramController')
+const { authorizeAdmin } = require('../middlewares/auth')
+
+router.get('/', getAllPrograms)
+router.get('/:id', getProgramById)
+router.post('/', authorizeAdmin, createProgram)
+router.put('/:id', authorizeAdmin, updateProgram)
+router.delete('/:id', authorizeAdmin, deleteProgram)
+
+module.exports = router
+
 /**
  * @swagger
  * tags:
@@ -117,21 +136,3 @@
  *       200:
  *         description: Program deleted successfully
  */
-
-const express = require('express')
-const router = express.Router()
-const {
-  getAllPrograms,
-  getProgramById,
-  createProgram,
-  updateProgram,
-  deleteProgram
-} = require('../controllers/ProgramController')
-
-router.get('/', getAllPrograms)
-router.get('/:id', getProgramById)
-router.post('/', createProgram)
-router.put('/:id', updateProgram)
-router.delete('/:id', deleteProgram)
-
-module.exports = router

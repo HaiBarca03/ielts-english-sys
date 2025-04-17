@@ -7,12 +7,17 @@ const {
   updateAttendance,
   deleteAttendance
 } = require('../controllers/AttendanceController')
+const {
+  authorizeAdminTeacher,
+  authorizeAdmin,
+  authorizeUser
+} = require('../middlewares/auth')
 
-router.post('/', createAttendance)
-router.get('/class/:class_id', getAttendancesByClass)
-router.get('/user/:user_id', getAttendancesByUser)
-router.put('/:attendance_id', updateAttendance)
-router.delete('/:attendance_id', deleteAttendance)
+router.post('/', authorizeAdminTeacher, createAttendance)
+router.get('/class/:class_id', authorizeAdminTeacher, getAttendancesByClass)
+router.get('/user/:user_id', authorizeUser, getAttendancesByUser)
+router.put('/:attendance_id', authorizeAdminTeacher, updateAttendance)
+router.delete('/:attendance_id', authorizeAdmin, deleteAttendance)
 
 module.exports = router
 

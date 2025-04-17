@@ -8,13 +8,14 @@ const {
   updateSchedule,
   deleteSchedule
 } = require('../controllers/ScheduleController')
+const { authorizeAdmin, authorizeUser } = require('../middlewares/auth')
 
-router.post('/', createSchedule)
-router.get('/', getSchedules)
-router.get('/user/:user_id', getSchedulesByUser)
-router.get('/:id', getScheduleDetail)
-router.put('/:id', updateSchedule)
-router.delete('/:schedule_id', deleteSchedule)
+router.post('/', authorizeAdmin, createSchedule)
+router.get('/', authorizeAdmin, getSchedules)
+router.get('/user/:user_id', authorizeUser, getSchedulesByUser)
+router.get('/:id', authorizeUser, getScheduleDetail)
+router.put('/:id', authorizeAdmin, updateSchedule)
+router.delete('/:schedule_id', authorizeAdmin, deleteSchedule)
 
 module.exports = router
 
