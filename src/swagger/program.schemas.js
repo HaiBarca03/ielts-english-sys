@@ -6,6 +6,10 @@ const ProgramBaseProperties = {
   description: {
     type: 'string',
     description: 'Mô tả chương trình'
+  },
+  price: {
+    type: 'number',
+    description: 'Số tiền học phí'
   }
 }
 

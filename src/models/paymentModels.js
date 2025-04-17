@@ -31,8 +31,8 @@ const Payment = sequelize.define(
       allowNull: false
     },
     paid_at: {
-      type: DataTypes.DATEONLY,
-      defaultValue: DataTypes.DATEONLY
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
     },
     created_at: {
       type: DataTypes.DATE,

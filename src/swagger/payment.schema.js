@@ -30,8 +30,17 @@ const PaymentBaseProperties = {
 
 const PaymentCreateSchema = {
   type: 'object',
-  required: ['user_id', 'program_id', 'amount', 'due_date'],
-  properties: PaymentBaseProperties
+  required: ['user_id', 'program_id'],
+  properties: {
+    user_id: {
+      type: 'string',
+      description: 'ID của người dùng'
+    },
+    program_id: {
+      type: 'string',
+      description: 'ID của chương trình học'
+    }
+  }
 }
 
 const PaymentUpdateSchema = {
