@@ -14,6 +14,10 @@ const Program = sequelize.define(
       type: DataTypes.STRING(255),
       allowNull: false
     },
+    price: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
+    },
     description: {
       type: DataTypes.TEXT
     },

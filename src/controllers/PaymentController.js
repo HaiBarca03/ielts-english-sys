@@ -4,12 +4,12 @@ const UserService = require('../services/UserService')
 
 const createPayment = async (req, res) => {
   try {
-    const { user_id, program_id, amount } = req.body
-
-    const checkProgram = await ProgramService.checkProgramExists(program_id)
+    const { user_id, program_id } = req.body
+    const checkProgram = await ProgramService.getProgramById(program_id)
     if (!checkProgram) {
       return res.status(404).json({ message: 'Program not found' })
     }
+    const ProgramData = checkProgram.get({ plain: true })
 
     const today = new Date()
     const dueDateObj = new Date()
@@ -19,7 +19,7 @@ const createPayment = async (req, res) => {
     const data = {
       user_id,
       program_id,
-      amount,
+      amount: ProgramData.price,
       due_date,
       status: 'Paid'
     }

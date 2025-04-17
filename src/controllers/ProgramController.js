@@ -33,11 +33,9 @@ const createProgram = async (req, res) => {
 }
 
 const updateProgram = async (req, res) => {
-  const { brand_name } = req.body
-
-  const existingProgram = await programService.checkProgramExists(brand_name)
-  if (existingProgram) {
-    return res.status(400).json({ message: 'Brand name already exists' })
+  const checkProgram = await programService.getProgramById(req.params.id)
+  if (!checkProgram) {
+    return res.status(404).json({ message: 'Program not found' })
   }
   const updated = await programService.updateProgram(req.params.id, req.body)
   if (!updated) return res.status(404).json({ message: 'Program not found' })
