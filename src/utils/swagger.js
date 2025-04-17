@@ -15,6 +15,11 @@ const {
   ContentBaseProperties
 } = require('../swagger/content.schema')
 const {
+  PaymentCreateSchema,
+  PaymentUpdateSchema,
+  PaymentBaseProperties
+} = require('../swagger/payment.schema')
+const {
   ProgramCreateSchema,
   ProgramUpdateSchema,
   ProgramBaseProperties
@@ -165,6 +170,27 @@ const swaggerDefinition = {
             description: 'ID attendance'
           },
           ...AttendanceBaseProperties,
+          createdAt: {
+            type: 'string',
+            format: 'date-time'
+          },
+          updatedAt: {
+            type: 'string',
+            format: 'date-time'
+          }
+        }
+      },
+      // Các schema cho payment
+      PaymentCreate: PaymentCreateSchema,
+      PaymentUpdate: PaymentUpdateSchema,
+      Payment: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            description: 'ID attendance'
+          },
+          ...PaymentBaseProperties,
           createdAt: {
             type: 'string',
             format: 'date-time'

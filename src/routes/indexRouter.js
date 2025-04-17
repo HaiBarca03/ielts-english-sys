@@ -8,6 +8,7 @@ const userRouter = require('../routes/userRouters')
 const classRouter = require('../routes/classRouters')
 const scheduleRouter = require('../routes/scheduleRouters')
 const attendanceRouter = require('../routes/attendanceRouters')
+const paymentRouter = require('../routes/paymentRouters')
 
 router.use('/programs', programRouter)
 router.use('/contents', contentRouter)
@@ -16,5 +17,6 @@ router.use('/account', userRouter)
 router.use('/class', classRouter)
 router.use('/schedule', scheduleRouter)
 router.use('/attendance', attendanceRouter)
+router.use('/payment', paymentRouter)
 
 module.exports = router
