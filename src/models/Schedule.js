@@ -29,6 +29,17 @@ const Schedule = sequelize.define(
       type: DataTypes.TIME,
       allowNull: false
     },
+    type: {
+      type: DataTypes.ENUM(
+        '2-4-6-s',
+        '2-4-6-c',
+        '2-4-6-t',
+        '3-5-7-s',
+        '3-5-7-c',
+        '3-5-7-t'
+      ),
+      allowNull: false
+    },
     room: {
       type: DataTypes.STRING(50)
     },

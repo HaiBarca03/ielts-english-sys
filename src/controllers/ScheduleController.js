@@ -1,52 +1,109 @@
 const ScheduleService = require('../services/ScheduleService')
 const ClassService = require('../services/ClassService')
 const UserService = require('../services/UserService')
+const { Schedule } = require('../models')
 
 const createSchedule = async (req, res) => {
   try {
-    const { class_id, teacher_id, date, start_time, end_time, room } = req.body
+    const { class_id, teacher_id, room, type } = req.body
     const role = 'Teacher'
-    if (!class_id || !teacher_id || !date || !start_time || !end_time) {
+
+    if (!class_id || !teacher_id || !type) {
       return res.status(400).json({ message: 'Missing required fields' })
     }
 
-    const checkClass = await ClassService.getClassInfo(class_id)
-    if (!checkClass) {
+    const classInfo = await ClassService.getClassInfo(class_id)
+    if (!classInfo) {
       return res.status(404).json({ message: 'Class not found' })
     }
-    const checkTeacher = await UserService.checkUser(teacher_id, role)
-    if (!checkTeacher) {
+    const { start_date, end_date } = classInfo
+
+    const teacher = await UserService.checkUser(teacher_id, role)
+    if (!teacher) {
       return res.status(404).json({ message: 'Teacher not found' })
     }
-    const inputDate = new Date(date)
-    const today = new Date()
 
-    today.setHours(0, 0, 0, 0)
-    inputDate.setHours(0, 0, 0, 0)
-
-    if (inputDate < today) {
-      return res
-        .status(400)
-        .json({ message: 'Date must be today or in the future' })
+    const conflict = await ScheduleService.checkScheduleConflict({
+      type,
+      start_date,
+      end_date,
+      room
+    })
+    if (conflict) {
+      return res.status(400).json({
+        message:
+          'Schedule conflict detected in room for this type and date range'
+      })
     }
 
-    const newSchedule = await ScheduleService.createSchedule({
+    const schedules = generateSchedules(type, start_date, end_date, {
       class_id,
       teacher_id,
-      date,
-      start_time,
-      end_time,
       room
     })
 
+    const created = await Schedule.bulkCreate(schedules)
+
     return res.status(201).json({
-      message: 'Schedule created successfully',
-      schedule: newSchedule
+      message: 'Schedules created successfully',
+      count: created.length,
+      schedules: created
     })
   } catch (error) {
-    console.error('Error creating schedule:', error)
+    console.error('Error creating schedules:', error)
     return res.status(500).json({ message: 'Internal server error' })
   }
+}
+
+const generateSchedules = (type, startDateStr, endDateStr, commonFields) => {
+  const daysMap = {
+    2: 1,
+    3: 2,
+    4: 3,
+    5: 4,
+    6: 5,
+    7: 6
+  }
+
+  const sessionTimes = {
+    s: { start_time: '09:00:00', end_time: '11:00:00' },
+    c: { start_time: '14:00:00', end_time: '16:00:00' },
+    t: { start_time: '18:00:00', end_time: '20:00:00' }
+  }
+
+  const sessionPart = type.split('-').pop()
+  const daysPart = type.replace(`-${sessionPart}`, '')
+
+  const days = daysPart.split('-').map((d) => daysMap[d])
+  const sessionTime = sessionTimes[sessionPart]
+
+  if (!sessionTime) {
+    throw new Error(`Invalid session type: ${sessionPart}`)
+  }
+
+  const { start_time, end_time } = sessionTime
+
+  const startDate = new Date(startDateStr)
+  const endDate = new Date(endDateStr)
+  const schedules = []
+
+  for (
+    let date = new Date(startDate);
+    date <= endDate;
+    date.setDate(date.getDate() + 1)
+  ) {
+    if (days.includes(date.getDay())) {
+      const formattedDate = date.toISOString().split('T')[0]
+      schedules.push({
+        ...commonFields,
+        date: formattedDate,
+        start_time,
+        end_time
+      })
+    }
+  }
+
+  return schedules
 }
 
 const getSchedules = async (req, res) => {

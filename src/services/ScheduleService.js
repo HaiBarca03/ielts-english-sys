@@ -102,11 +102,72 @@ const deleteSchedule = async (scheduleId) => {
   return deletedCount > 0
 }
 
+const getDatesByType = (type, startDateStr, endDateStr) => {
+  const daysMap = { 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 7: 6 }
+  const session = type.slice(-1) // s / c / t
+  const days = type
+    .slice(0, 5)
+    .split('-')
+    .map((d) => daysMap[d])
+
+  const dates = []
+  const startDate = new Date(startDateStr)
+  const endDate = new Date(endDateStr)
+
+  for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+    if (days.includes(d.getDay())) {
+      dates.push(new Date(d))
+    }
+  }
+
+  return { session, dates }
+}
+
+const getTimeRangeBySession = (session) => {
+  const timeMap = {
+    s: { start_time: '07:00:00', end_time: '11:00:00' },
+    c: { start_time: '13:00:00', end_time: '17:00:00' },
+    t: { start_time: '18:00:00', end_time: '22:00:00' }
+  }
+  return timeMap[session]
+}
+
+const checkScheduleConflict = async ({ type, start_date, end_date, room }) => {
+  const { session, dates } = getDatesByType(type, start_date, end_date)
+  const { start_time, end_time } = getTimeRangeBySession(session)
+
+  const dateList = dates.map((d) => d.toISOString().split('T')[0])
+
+  const conflict = await Schedule.findOne({
+    where: {
+      room,
+      date: { [Op.in]: dateList },
+      [Op.or]: [
+        {
+          start_time: { [Op.between]: [start_time, end_time] }
+        },
+        {
+          end_time: { [Op.between]: [start_time, end_time] }
+        },
+        {
+          [Op.and]: [
+            { start_time: { [Op.lte]: start_time } },
+            { end_time: { [Op.gte]: end_time } }
+          ]
+        }
+      ]
+    }
+  })
+
+  return !!conflict
+}
+
 module.exports = {
   createSchedule,
   getAllSchedules,
   getSchedulesByUserId,
   getScheduleDetail,
   updateSchedule,
-  deleteSchedule
+  deleteSchedule,
+  checkScheduleConflict
 }
