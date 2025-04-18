@@ -34,6 +34,13 @@ const Payment = sequelize.define(
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
     },
+    discount: {
+      type: DataTypes.DECIMAL(10, 2),
+      defaultValue: 0,
+      validate: {
+        min: 0
+      }
+    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
