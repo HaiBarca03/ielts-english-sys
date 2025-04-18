@@ -173,7 +173,16 @@ const addUserToClass = async (req, res) => {
     const { classId, userId } = req.body
 
     const classInstance = await Class.findByPk(classId, {
-      include: ['Users']
+      include: [
+        {
+          model: User,
+          attributes: ['user_id', 'name', 'role', 'email']
+        },
+        {
+          model: Program,
+          attributes: ['program_id', 'brand_name', 'description']
+        }
+      ]
     })
     if (!classInstance) {
       return res.status(404).json({ message: 'Class not found' })
@@ -196,7 +205,10 @@ const addUserToClass = async (req, res) => {
 
     await ClassService.addUserToClass(classInstance, user)
 
-    return res.status(200).json({ message: 'User added to class successfully' })
+    return res.status(200).json({
+      message: 'User added to class successfully',
+      class: classInstance
+    })
   } catch (error) {
     console.error('Error adding user to class:', error)
     return res.status(500).json({ message: 'Internal server error' })
