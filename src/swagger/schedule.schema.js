@@ -31,7 +31,24 @@ const ScheduleBaseProperties = {
 const ScheduleCreateSchema = {
   type: 'object',
   required: ['class_id', 'teacher_id', 'date', 'start_time', 'end_time'],
-  properties: ScheduleBaseProperties
+  properties: {
+    class_id: {
+      type: 'string',
+      description: 'ID của lớp học'
+    },
+    teacher_id: {
+      type: 'string',
+      description: 'ID của giảng viên'
+    },
+    room: {
+      type: 'string',
+      description: 'Phòng học'
+    },
+    type: {
+      type: 'string',
+      description: 'Loại lịch học'
+    }
+  }
 }
 
 const ScheduleUpdateSchema = {
