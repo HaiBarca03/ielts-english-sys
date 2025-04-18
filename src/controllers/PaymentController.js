@@ -5,22 +5,50 @@ const UserService = require('../services/UserService')
 const createPayment = async (req, res) => {
   try {
     const { user_id, program_id } = req.body
+
     const checkProgram = await ProgramService.getProgramById(program_id)
     if (!checkProgram) {
       return res.status(404).json({ message: 'Program not found' })
     }
+    const checkUserPayment = await paymentService.checkPaymentStatus(
+      user_id,
+      program_id
+    )
+    if (checkUserPayment) {
+      return res.status(400).json({ message: 'Payment already made' })
+    }
     const ProgramData = checkProgram.get({ plain: true })
 
-    const today = new Date()
-    const dueDateObj = new Date()
-    dueDateObj.setDate(today.getDate() + 7)
+    const checkUserRaw = await UserService.findUserById(user_id)
+    if (!checkUserRaw) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+    const checkUser = checkUserRaw.get({ plain: true })
+
+    const createdDate = new Date(checkUser.created_at)
+    const paid_at = new Date()
+    const paidDate = paid_at
+
+    const dueDateObj = new Date(createdDate)
+    dueDateObj.setDate(dueDateObj.getDate() + 7)
 
     const due_date = dueDateObj.toISOString().split('T')[0]
+
+    const timeDiff = paidDate.getTime() - createdDate.getTime()
+
+    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24))
+
+    const discount = daysDiff <= 3 ? 0.1 : 0
+
+    const amount = (ProgramData.price * (1 - discount)).toFixed(2)
+
     const data = {
       user_id,
       program_id,
-      amount: ProgramData.price,
+      amount,
+      discount,
       due_date,
+      paid_at,
       status: 'Paid'
     }
 
@@ -28,7 +56,7 @@ const createPayment = async (req, res) => {
 
     return res.status(201).json({
       message: 'Payment created successfully',
-      data: newPayment
+      newPayment
     })
   } catch (error) {
     console.error('Error creating payment:', error)

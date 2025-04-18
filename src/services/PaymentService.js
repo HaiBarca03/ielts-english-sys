@@ -6,6 +6,17 @@ const createPayment = async (data) => {
   return payment
 }
 
+const checkPaymentStatus = async (user_id, program_id) => {
+  const payment = await Payment.findOne({
+    where: {
+      user_id: user_id,
+      program_id: program_id,
+      status: 'Paid'
+    }
+  })
+  return payment
+}
+
 const getAllPayments = async ({ status, page = 1, limit = 10, date }) => {
   const whereClause = {}
   if (status) whereClause.status = status
@@ -142,5 +153,6 @@ module.exports = {
   getPaymentsByProgram,
   updatePayment,
   getPaymentById,
+  checkPaymentStatus,
   deletePayment
 }
