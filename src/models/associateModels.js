@@ -31,6 +31,7 @@ module.exports = ({
     otherKey: 'user_id',
     timestamps: false
   })
+  Class.hasMany(Schedule, { foreignKey: 'class_id' })
 
   Schedule.belongsTo(Class, { foreignKey: 'class_id' })
   Schedule.belongsTo(User, { foreignKey: 'teacher_id', as: 'Teacher' })
