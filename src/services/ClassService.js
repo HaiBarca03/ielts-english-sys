@@ -1,5 +1,5 @@
 const { Op } = require('sequelize')
-const { Class, Program, User } = require('../models')
+const { Class, Program, User, Schedule } = require('../models')
 
 const createClass = async (data) => {
   return await Class.create(data)
@@ -75,6 +75,16 @@ const getClassInfo = async (classId) => {
           'school'
         ],
         through: { attributes: [] }
+      },
+      {
+        model: Schedule,
+        include: [
+          {
+            model: User,
+            as: 'Teacher',
+            attributes: ['user_id', 'name', 'email', 'phone']
+          }
+        ]
       }
     ]
   })

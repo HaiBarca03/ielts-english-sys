@@ -25,7 +25,7 @@ router.get(
   getStudentCount
 )
 router.get('/program/:program_id', authorizeAdminTeacher, getClassesByProgram)
-router.get('/:class_id', authorizeUser, getClassInfo)
+router.get('/:class_id', getClassInfo)
 router.put('/:id', authorizeAdmin, updateClass)
 router.delete('/:id', authorizeAdmin, deleteClass)
 router.post('/add-user', authorizeAdmin, addUserToClass)

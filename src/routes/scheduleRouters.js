@@ -6,12 +6,14 @@ const {
   getSchedulesByUser,
   getScheduleDetail,
   updateSchedule,
-  deleteSchedule
+  deleteSchedule,
+  getScheduleByClass
 } = require('../controllers/ScheduleController')
 const { authorizeAdmin, authorizeUser } = require('../middlewares/auth')
 
 router.post('/', authorizeAdmin, createSchedule)
 router.get('/', authorizeAdmin, getSchedules)
+router.get('/class/:class_id', authorizeUser, getScheduleByClass)
 router.get('/user/:user_id', authorizeUser, getSchedulesByUser)
 router.get('/:id', authorizeUser, getScheduleDetail)
 router.put('/:id', authorizeAdmin, updateSchedule)
@@ -74,6 +76,42 @@ module.exports = router
  *               $ref: '#/components/schemas/Schedule'
  *       400:
  *         description: Bad request
+ */
+
+/**
+ * @swagger
+ * /schedule/class/{class_id}:
+ *   get:
+ *     summary: Get schedule by class with pagination
+ *     tags: [Schedules]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number (default is 1)
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         description: Number of items per page (default is 10)
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: class_id
+ *         required: false
+ *         description: The ID of the class to filter by.
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: date
+ *         required: false
+ *         description: The date to filter by (in YYYY-MM-DD format).
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Paginated list of all schedule
  */
 
 /**

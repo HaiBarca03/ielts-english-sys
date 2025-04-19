@@ -34,6 +34,34 @@ const getAllSchedules = async (classId, teacherId, date, page, limit) => {
   }
 }
 
+const getSchedulesByClass = async (classId, date, page, limit) => {
+  const where = {}
+  if (classId) where.class_id = classId
+  if (date) where.date = date
+
+  page = parseInt(page) || 1
+  limit = parseInt(limit) || 10
+  const offset = (page - 1) * limit
+
+  const { count, rows } = await Schedule.findAndCountAll({
+    where,
+    offset,
+    limit,
+    include: [{ model: Class }, { model: User, as: 'Teacher' }],
+    order: [
+      ['date', 'ASC'],
+      ['start_time', 'ASC']
+    ]
+  })
+
+  return {
+    currentPage: page,
+    totalPages: Math.ceil(count / limit),
+    totalItems: count,
+    items: rows
+  }
+}
+
 const getSchedulesByUserId = async (userId, page, limit, date) => {
   page = parseInt(page) || 1
   limit = parseInt(limit) || 10
@@ -169,5 +197,6 @@ module.exports = {
   getScheduleDetail,
   updateSchedule,
   deleteSchedule,
-  checkScheduleConflict
+  checkScheduleConflict,
+  getSchedulesByClass
 }

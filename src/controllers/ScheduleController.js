@@ -208,11 +208,33 @@ const deleteSchedule = async (req, res) => {
   }
 }
 
+const getScheduleByClass = async (req, res) => {
+  try {
+    const { class_id, date, page, limit } = req.query
+
+    const schedules = await ScheduleService.getAllSchedules(
+      class_id,
+      date,
+      page,
+      limit
+    )
+
+    return res.status(200).json({
+      message: 'Schedules retrieved successfully',
+      schedules
+    })
+  } catch (error) {
+    console.error('Error retrieving schedules:', error)
+    return res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
 module.exports = {
   createSchedule,
   getSchedules,
   getSchedulesByUser,
   getScheduleDetail,
   updateSchedule,
-  deleteSchedule
+  deleteSchedule,
+  getScheduleByClass
 }
