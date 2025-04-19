@@ -212,7 +212,7 @@ const getScheduleByClass = async (req, res) => {
   try {
     const { class_id, date, page, limit } = req.query
 
-    const schedules = await ScheduleService.getAllSchedules(
+    const schedules = await ScheduleService.getSchedulesByClass(
       class_id,
       date,
       page,
