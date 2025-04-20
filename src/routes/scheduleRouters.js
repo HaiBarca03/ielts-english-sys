@@ -7,7 +7,8 @@ const {
   getScheduleDetail,
   updateSchedule,
   deleteSchedule,
-  getScheduleByClass
+  getScheduleByClass,
+  deleteSchedulesByClass
 } = require('../controllers/ScheduleController')
 const { authorizeAdmin, authorizeUser } = require('../middlewares/auth')
 
@@ -17,7 +18,8 @@ router.get('/class/:class_id', authorizeUser, getScheduleByClass)
 router.get('/user/:user_id', authorizeUser, getSchedulesByUser)
 router.get('/:id', authorizeUser, getScheduleDetail)
 router.put('/:id', authorizeAdmin, updateSchedule)
-router.delete('/:schedule_id', authorizeAdmin, deleteSchedule)
+router.delete('/class/:class_id', authorizeAdmin, deleteSchedulesByClass)
+router.delete('/', authorizeAdmin, deleteSchedule)
 
 module.exports = router
 
@@ -217,15 +219,50 @@ module.exports = router
 
 /**
  * @swagger
- * /schedule/{schedule_id}:
+ * /schedule:
  *   delete:
- *     summary: Delete a schedule by ID
+ *     summary: Delete one or multiple schedules by ID
+ *     description: Delete a single schedule or multiple schedules by providing one or more schedule IDs.
+ *     tags: [Schedules]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               schedule_id:
+ *                 oneOf:
+ *                   - type: string
+ *                     description: Single schedule ID to delete
+ *                   - type: array
+ *                     items:
+ *                       type: string
+ *                     description: List of schedule IDs to delete
+ *             example:
+ *               schedule_id: ["a1b2c3d4-e5f6-7890-abcd-1234567890ef"]
+ *     responses:
+ *       200:
+ *         description: Schedules deleted successfully
+ *       400:
+ *         description: No schedule IDs provided
+ *       404:
+ *         description: No schedules found or deleted
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /schedule/class/{class_id}:
+ *   delete:
+ *     summary: Delete a schedule by class ID
  *     tags: [Schedules]
  *     parameters:
  *       - in: path
- *         name: schedule_id
+ *         name: class_id
  *         required: true
- *         description: The ID of the schedule to delete
+ *         description: The class ID of the schedule to delete
  *         schema:
  *           type: string
  *     responses:

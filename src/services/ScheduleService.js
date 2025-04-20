@@ -1,4 +1,4 @@
-const { Op } = require('sequelize')
+const { Op, Sequelize } = require('sequelize')
 const { Schedule, Class, User, Attendance } = require('../models')
 
 const createSchedule = async (scheduleData) => {
@@ -122,13 +122,14 @@ const updateSchedule = async (scheduleId, data) => {
   return schedule
 }
 
-const deleteSchedule = async (scheduleId) => {
-  await Attendance.destroy({
-    where: { schedule_id: scheduleId }
-  })
+const deleteSchedules = async (scheduleIds) => {
+  const ids = Array.isArray(scheduleIds) ? scheduleIds : [scheduleIds]
+  if (ids.length === 0) return false
 
   const deletedCount = await Schedule.destroy({
-    where: { schedule_id: scheduleId }
+    where: {
+      schedule_id: { [Op.in]: ids }
+    }
   })
 
   return deletedCount > 0
@@ -194,13 +195,39 @@ const checkScheduleConflict = async ({ type, start_date, end_date, room }) => {
   return !!conflict
 }
 
+const deleteSchedulesByClassId = async (classId) => {
+  const schedules = await Schedule.findAll({
+    where: { class_id: classId },
+    attributes: ['schedule_id']
+  })
+
+  const scheduleIds = schedules.map((s) => s.schedule_id)
+
+  if (scheduleIds.length > 0) {
+    await Attendance.destroy({
+      where: {
+        schedule_id: {
+          [Op.in]: scheduleIds
+        }
+      }
+    })
+  }
+
+  const deletedCount = await Schedule.destroy({
+    where: { class_id: classId }
+  })
+
+  return deletedCount > 0
+}
+
 module.exports = {
   createSchedule,
   getAllSchedules,
   getSchedulesByUserId,
   getScheduleDetail,
   updateSchedule,
-  deleteSchedule,
+  deleteSchedules,
   checkScheduleConflict,
-  getSchedulesByClass
+  getSchedulesByClass,
+  deleteSchedulesByClassId
 }
