@@ -1,5 +1,5 @@
 const { Op } = require('sequelize')
-const { Schedule, Class, User } = require('../models')
+const { Schedule, Class, User, Attendance } = require('../models')
 
 const createSchedule = async (scheduleData) => {
   return await Schedule.create(scheduleData)
@@ -123,6 +123,10 @@ const updateSchedule = async (scheduleId, data) => {
 }
 
 const deleteSchedule = async (scheduleId) => {
+  await Attendance.destroy({
+    where: { schedule_id: scheduleId }
+  })
+
   const deletedCount = await Schedule.destroy({
     where: { schedule_id: scheduleId }
   })

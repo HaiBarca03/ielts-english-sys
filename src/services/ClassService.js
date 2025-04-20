@@ -72,7 +72,8 @@ const getClassInfo = async (classId) => {
           'gender',
           'dob',
           'address',
-          'school'
+          'school',
+          'created_at'
         ],
         through: { attributes: [] }
       },
@@ -82,7 +83,7 @@ const getClassInfo = async (classId) => {
           {
             model: User,
             as: 'Teacher',
-            attributes: ['user_id', 'name', 'email', 'phone']
+            attributes: ['user_id', 'name', 'email', 'phone', 'created_at']
           }
         ]
       }
