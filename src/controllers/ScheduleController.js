@@ -192,17 +192,24 @@ const updateSchedule = async (req, res) => {
 
 const deleteSchedule = async (req, res) => {
   try {
-    const { schedule_id } = req.params
-
-    const success = await ScheduleService.deleteSchedule(schedule_id)
-
-    if (!success) {
-      return res.status(404).json({ message: 'Schedule not found' })
+    let { schedule_id } = req.body
+    if (!schedule_id) {
+      return res.status(400).json({ message: 'No schedule IDs provided' })
     }
 
-    return res.status(200).json({ message: 'Schedule deleted successfully' })
+    if (!Array.isArray(schedule_id)) {
+      schedule_id = [schedule_id]
+    }
+
+    const success = await ScheduleService.deleteSchedules(schedule_id)
+
+    if (!success) {
+      return res.status(404).json({ message: 'No schedules found or deleted' })
+    }
+
+    return res.status(200).json({ message: 'Schedules deleted successfully' })
   } catch (error) {
-    console.error('Error deleting schedule:', error)
+    console.error('Error deleting schedules:', error)
     return res.status(500).json({ message: 'Internal server error' })
   }
 }
@@ -228,6 +235,30 @@ const getScheduleByClass = async (req, res) => {
   }
 }
 
+const deleteSchedulesByClass = async (req, res) => {
+  try {
+    const { class_id } = req.params
+
+    const classInfo = await ClassService.getClassInfo(class_id)
+    if (!classInfo) {
+      return res.status(404).json({ message: 'Class not found' })
+    }
+
+    const success = await ScheduleService.deleteSchedulesByClassId(class_id)
+
+    if (!success) {
+      return res
+        .status(404)
+        .json({ message: 'No schedules found for this class' })
+    }
+
+    return res.status(200).json({ message: 'Schedules deleted successfully' })
+  } catch (error) {
+    console.error('Error deleting schedules:', error)
+    return res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
 module.exports = {
   createSchedule,
   getSchedules,
@@ -235,5 +266,6 @@ module.exports = {
   getScheduleDetail,
   updateSchedule,
   deleteSchedule,
-  getScheduleByClass
+  getScheduleByClass,
+  deleteSchedulesByClass
 }

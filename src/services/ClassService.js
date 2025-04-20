@@ -121,10 +121,16 @@ const updateClass = async (classId, updateData) => {
   return classToUpdate
 }
 
-const deleteClass = async (classId) => {
-  const classToDelete = await Class.findByPk(classId)
-  await classToDelete.destroy()
-  return
+const deleteClass = async (classIds) => {
+  const ids = Array.isArray(classIds) ? classIds : [classIds]
+
+  await Class.destroy({
+    where: {
+      class_id: {
+        [Op.in]: ids
+      }
+    }
+  })
 }
 
 const addUserToClass = async (classInstance, user) => {

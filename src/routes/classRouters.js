@@ -27,7 +27,7 @@ router.get(
 router.get('/program/:program_id', authorizeAdminTeacher, getClassesByProgram)
 router.get('/:class_id', authorizeUser, getClassInfo)
 router.put('/:id', authorizeAdmin, updateClass)
-router.delete('/:id', authorizeAdmin, deleteClass)
+router.delete('/', authorizeAdmin, deleteClass)
 router.post('/add-user', authorizeAdmin, addUserToClass)
 router.delete('/:classId/user/:userId', authorizeAdmin, deleteUserFromClass)
 
@@ -184,15 +184,16 @@ module.exports = router
 
 /**
  * @swagger
- * /class/{id}:
+ * /class:
  *   delete:
- *     summary: Delete class by ID
+ *     summary: Delete class by many ids
  *     tags: [Class]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: class ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ClassDelete'
  *     responses:
  *       200:
  *         description: Class deleted successfully

@@ -86,9 +86,25 @@ const ClassUserSchema = {
   }
 }
 
+const DeleteClassesSchema = {
+  type: 'object',
+  required: ['id'],
+  properties: {
+    id: {
+      type: 'array',
+      items: {
+        type: 'string',
+        description: 'Mã lớp học'
+      },
+      description: 'Danh sách mã lớp học cần xóa'
+    }
+  }
+}
+
 module.exports = {
   ClassCreateSchema,
   ClassUpdateSchema,
   ClassBaseProperties,
-  ClassUserSchema
+  ClassUserSchema,
+  DeleteClassesSchema
 }
