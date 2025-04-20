@@ -153,15 +153,17 @@ const updateClass = async (req, res) => {
 
 const deleteClass = async (req, res) => {
   try {
-    const { id } = req.params
+    const { id } = req.body
+
+    if (!id || (Array.isArray(id) && id.length === 0)) {
+      return res.status(400).json({ message: 'No class ID provided' })
+    }
 
     await ClassService.deleteClass(id)
 
-    return res.status(200).json({
-      message: 'Class deleted successfully'
-    })
+    return res.status(200).json({ message: 'Classes deleted successfully' })
   } catch (error) {
-    console.error('Error deleting class:', error)
+    console.error('Error deleting classes:', error)
     return res.status(500).json({
       message: error.message || 'Internal server error'
     })

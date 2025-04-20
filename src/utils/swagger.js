@@ -7,7 +7,8 @@ const {
   ClassUpdateSchema,
   ClassCreateSchema,
   ClassUserSchema,
-  ClassBaseProperties
+  ClassBaseProperties,
+  DeleteClassesSchema
 } = require('../swagger/class.schema')
 const {
   ContentCreateSchema,
@@ -125,6 +126,7 @@ const swaggerDefinition = {
       ClassCreate: ClassCreateSchema,
       ClassUpdate: ClassUpdateSchema,
       ClassUserCreate: ClassUserSchema,
+      ClassDelete: DeleteClassesSchema,
       Class: {
         type: 'object',
         properties: {
