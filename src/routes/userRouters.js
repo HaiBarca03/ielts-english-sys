@@ -5,7 +5,7 @@ const {
   getUserById,
   getProfile,
   updateUser,
-  deleteUser,
+  deleteManyUsers,
   getClassByUser,
   getContentForUser,
   getUserRoles
@@ -21,7 +21,7 @@ router.get('/user-class/:userId', authorizeAdmin, getClassByUser)
 router.get('/roles', getUserRoles)
 router.put('/:id', authorizeUser, uploadFiles, updateUser)
 router.get('/:id', getUserById)
-router.delete('/:id', authorizeAdmin, deleteUser)
+router.delete('/', authorizeAdmin, deleteManyUsers)
 router.get('/:userId/content', getContentForUser)
 
 module.exports = router
@@ -160,15 +160,27 @@ module.exports = router
 
 /**
  * @swagger
- * /account/{id}:
+ * /account:
  *   delete:
  *     summary: Delete user by ID
  *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: user ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               user_id:
+ *                 oneOf:
+ *                   - type: string
+ *                     description: Single schedule ID to delete
+ *                   - type: array
+ *                     items:
+ *                       type: string
+ *                     description: List of schedule IDs to delete
+ *             example:
+ *               user_id: ["a1b2c3d4-e5f6-7890-abcd-1234567890ef"]
  *     responses:
  *       200:
  *         description: user deleted successfully

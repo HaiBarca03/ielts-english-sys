@@ -34,7 +34,7 @@ const registerUser = async (req, res) => {
       school
     })
 
-    if (req.files.images && req.files.images.length > 0) {
+    if (req.files && req.files.images && req.files.images.length > 0) {
       const uploadedImages = await Promise.all(
         req.files.images.map((file) => uploadToCloud(file))
       )
@@ -192,18 +192,20 @@ const updateUser = async (req, res) => {
   }
 }
 
-const deleteUser = async (req, res) => {
-  const { id } = req.params
+const deleteManyUsers = async (req, res) => {
+  const { user_id } = req.body
+
+  if (!Array.isArray(user_id) || user_id.length === 0) {
+    return res.status(400).json({ message: 'List of user IDs is required' })
+  }
+
   try {
-    const user = await UserService.findUserById(id)
+    const deletedCount = await UserService.deleteUsersByIds(user_id)
 
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' })
-    }
-
-    await UserService.deleteUserById(id)
-
-    return res.status(200).json({ message: 'User deleted successfully' })
+    return res.status(200).json({
+      message: `${deletedCount} user(s) deleted successfully`,
+      deletedCount
+    })
   } catch (error) {
     console.error(error)
     return res.status(500).json({ message: 'Server error' })
@@ -281,7 +283,7 @@ module.exports = {
   getUserById,
   getProfile,
   updateUser,
-  deleteUser,
+  deleteManyUsers,
   getClassByUser,
   getContentForUser,
   getUserRoles

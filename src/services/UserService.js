@@ -30,8 +30,14 @@ const createUser = async (userData) => {
   return await User.create(userData)
 }
 
-const deleteUserById = async (id) => {
-  return await User.destroy({ where: { user_id: id } })
+const deleteUsersByIds = async (ids) => {
+  const deleted = await User.destroy({
+    where: {
+      user_id: ids
+    }
+  })
+
+  return deleted
 }
 
 const getUserClasses = async (userId) => {
@@ -82,7 +88,7 @@ module.exports = {
   createUser,
   findUserById,
   updateUser,
-  deleteUserById,
+  deleteUsersByIds,
   getUserClasses,
   checkUser,
   getUsersByRole
