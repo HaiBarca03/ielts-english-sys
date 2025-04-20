@@ -35,13 +35,11 @@ const createSchedule = async (req, res) => {
           'Schedule conflict detected in room for this type and date range'
       })
     }
-
     const schedules = generateSchedules(type, start_date, end_date, {
       class_id,
       teacher_id,
       room
     })
-
     const created = await Schedule.bulkCreate(schedules)
 
     return res.status(201).json({
@@ -98,7 +96,8 @@ const generateSchedules = (type, startDateStr, endDateStr, commonFields) => {
         ...commonFields,
         date: formattedDate,
         start_time,
-        end_time
+        end_time,
+        type: type
       })
     }
   }
