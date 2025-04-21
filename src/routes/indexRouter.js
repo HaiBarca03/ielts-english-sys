@@ -10,6 +10,7 @@ const scheduleRouter = require('../routes/scheduleRouters')
 const attendanceRouter = require('../routes/attendanceRouters')
 const paymentRouter = require('../routes/paymentRouters')
 const scoreRouter = require('../routes/scoreRouters')
+const statisticalRouter = require('../routes/statisticalRouters')
 
 router.use('/programs', programRouter)
 router.use('/contents', contentRouter)
@@ -20,5 +21,6 @@ router.use('/schedule', scheduleRouter)
 router.use('/attendance', attendanceRouter)
 router.use('/payment', paymentRouter)
 router.use('/score', scoreRouter)
+router.use('/statistical', statisticalRouter)
 
 module.exports = router
