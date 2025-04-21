@@ -1,6 +1,7 @@
 const paymentService = require('../services/PaymentService')
 const ProgramService = require('../services/ProgramService')
 const UserService = require('../services/UserService')
+const dayjs = require('dayjs')
 
 const createPayment = async (req, res) => {
   try {
@@ -188,15 +189,49 @@ const deletePayment = async (req, res) => {
 
 const monthlyRevenue = async (req, res) => {
   try {
-    const { page, limit, date } = req.query
+    const { page = 1, limit = 12, date } = req.query
+    const year = date || dayjs().format('YYYY')
+
     const revenueData = await paymentService.getMonthlyRevenue({
       page,
       limit,
-      date
+      date: year
     })
+
     res.status(200).json(revenueData)
   } catch (err) {
-    console.error('Error deleting payment:', err)
+    console.error('Error fetching revenue:', err)
+    res.status(400).json({ message: err.message })
+  }
+}
+
+const monthlyRevenueDetails = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, status, user_id, program_id } = req.query
+    let { date } = req.query
+
+    if (!date) {
+      date = dayjs().format('YYYY-MM')
+    }
+
+    if (!/^\d{4}-\d{2}$/.test(date)) {
+      return res
+        .status(400)
+        .json({ message: 'Invalid date format. Use YYYY-MM' })
+    }
+
+    const result = await paymentService.getMonthlyRevenueDetails({
+      page,
+      limit,
+      date,
+      status,
+      user_id,
+      program_id
+    })
+
+    res.status(200).json(result)
+  } catch (err) {
+    console.error('Error fetching revenue details:', err)
     res.status(400).json({ message: err.message })
   }
 }
@@ -209,5 +244,6 @@ module.exports = {
   updatePayment,
   getPaymentById,
   deletePayment,
-  monthlyRevenue
+  monthlyRevenue,
+  monthlyRevenueDetails
 }

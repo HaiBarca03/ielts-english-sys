@@ -213,6 +213,65 @@ const getMonthlyRevenue = async ({ page = 1, limit = 10, date }) => {
   }
 }
 
+const getMonthlyRevenueDetails = async ({
+  page = 1,
+  limit = 10,
+  date,
+  status,
+  user_id,
+  program_id
+}) => {
+  const offset = (parseInt(page) - 1) * parseInt(limit)
+
+  const startDate = dayjs(date).startOf('month').format('YYYY-MM-DD')
+  const endDate = dayjs(date).endOf('month').format('YYYY-MM-DD')
+
+  const whereClause = {
+    paid_at: {
+      [Op.between]: [startDate, endDate]
+    }
+  }
+
+  if (status) whereClause.status = status
+  if (user_id) whereClause.user_id = user_id
+  if (program_id) whereClause.program_id = program_id
+
+  const { count, rows } = await Payment.findAndCountAll({
+    where: whereClause,
+    order: [['paid_at', 'DESC']],
+    offset,
+    limit: parseInt(limit),
+    include: [
+      {
+        model: User,
+        attributes: ['user_id', 'name', 'email']
+      },
+      {
+        model: Program,
+        attributes: ['program_id', 'brand_name', 'description']
+      }
+    ]
+  })
+
+  const totalRevenue = await Payment.sum('amount', {
+    where: {
+      status: 'Paid',
+      paid_at: {
+        [Op.between]: [startDate, endDate]
+      }
+    }
+  })
+
+  return {
+    month: date,
+    totalRevenue: totalRevenue || 0,
+    currentPage: parseInt(page),
+    totalPages: Math.ceil(count / limit),
+    totalItems: count,
+    items: rows
+  }
+}
+
 module.exports = {
   createPayment,
   getAllPayments,
@@ -222,5 +281,6 @@ module.exports = {
   getPaymentById,
   checkPaymentStatus,
   deletePayment,
-  getMonthlyRevenue
+  getMonthlyRevenue,
+  getMonthlyRevenueDetails
 }
