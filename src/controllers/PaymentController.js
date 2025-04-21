@@ -186,6 +186,21 @@ const deletePayment = async (req, res) => {
   }
 }
 
+const monthlyRevenue = async (req, res) => {
+  try {
+    const { page, limit, date } = req.query
+    const revenueData = await paymentService.getMonthlyRevenue({
+      page,
+      limit,
+      date
+    })
+    res.status(200).json(revenueData)
+  } catch (err) {
+    console.error('Error deleting payment:', err)
+    res.status(400).json({ message: err.message })
+  }
+}
+
 module.exports = {
   createPayment,
   getAllPayments,
@@ -193,5 +208,6 @@ module.exports = {
   getPaymentsByProgram,
   updatePayment,
   getPaymentById,
-  deletePayment
+  deletePayment,
+  monthlyRevenue
 }

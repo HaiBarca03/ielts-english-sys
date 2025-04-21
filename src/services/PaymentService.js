@@ -1,5 +1,6 @@
-const { Op } = require('sequelize')
+const { Op, fn, col, literal } = require('sequelize')
 const { Payment, User, Program } = require('../models')
+const dayjs = require('dayjs')
 
 const createPayment = async (data) => {
   const payment = await Payment.create(data)
@@ -146,6 +147,72 @@ const deletePayment = async (paymentId) => {
   return { message: 'Payment deleted successfully' }
 }
 
+const getMonthlyRevenue = async ({ page = 1, limit = 10, date }) => {
+  const offset = (page - 1) * limit
+  const whereClause = {
+    status: 'Paid'
+  }
+
+  let yearFilter = null
+
+  if (date) {
+    const isYearOnly = /^\d{4}$/.test(date)
+    const isYearMonth = /^\d{4}-\d{2}$/.test(date)
+
+    if (isYearOnly) {
+      whereClause.paid_at = {
+        [Op.gte]: `${date}-01-01`,
+        [Op.lte]: `${date}-12-31`
+      }
+      yearFilter = date
+    } else if (isYearMonth) {
+      const startOfMonth = dayjs(`${date}-01`)
+        .startOf('month')
+        .format('YYYY-MM-DD')
+      const endOfMonth = dayjs(`${date}-01`).endOf('month').format('YYYY-MM-DD')
+
+      whereClause.paid_at = {
+        [Op.gte]: startOfMonth,
+        [Op.lte]: endOfMonth
+      }
+
+      yearFilter = date.split('-')[0]
+    }
+  }
+
+  const results = await Payment.findAll({
+    attributes: [
+      [fn('DATE_FORMAT', col('paid_at'), '%Y-%m'), 'month'],
+      [fn('SUM', col('amount')), 'totalRevenue']
+    ],
+    where: whereClause,
+    group: [literal('month')],
+    order: [[literal('month'), 'ASC']],
+    offset: parseInt(offset),
+    limit: parseInt(limit)
+  })
+
+  let totalYearRevenue = null
+  if (yearFilter) {
+    totalYearRevenue = await Payment.sum('amount', {
+      where: {
+        status: 'Paid',
+        paid_at: {
+          [Op.between]: [`${yearFilter}-01-01`, `${yearFilter}-12-31`]
+        }
+      }
+    })
+  }
+
+  return {
+    page: parseInt(page),
+    limit: parseInt(limit),
+    year: yearFilter,
+    totalYearRevenue: totalYearRevenue ? Number(totalYearRevenue) : null,
+    data: results.map((r) => r.get({ plain: true }))
+  }
+}
+
 module.exports = {
   createPayment,
   getAllPayments,
@@ -154,5 +221,6 @@ module.exports = {
   updatePayment,
   getPaymentById,
   checkPaymentStatus,
-  deletePayment
+  deletePayment,
+  getMonthlyRevenue
 }
