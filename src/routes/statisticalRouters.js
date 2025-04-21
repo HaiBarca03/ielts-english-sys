@@ -3,7 +3,7 @@ const router = express.Router()
 const { monthlyRevenue } = require('../controllers/PaymentController')
 const { authorizeAdmin, authorizeUser } = require('../middlewares/auth')
 
-router.get('/monthlyRevenue', monthlyRevenue)
+router.get('/monthlyRevenue',authorizeAdmin, monthlyRevenue)
 
 module.exports = router
 
