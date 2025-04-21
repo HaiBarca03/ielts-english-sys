@@ -7,7 +7,7 @@ const {
 const { authorizeAdmin, authorizeUser } = require('../middlewares/auth')
 
 router.get('/monthly-revenue', authorizeAdmin, monthlyRevenue)
-router.get('/daily-revenue', monthlyRevenueDetails)
+router.get('/daily-revenue', authorizeAdmin, monthlyRevenueDetails)
 
 module.exports = router
 
