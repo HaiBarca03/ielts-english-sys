@@ -31,8 +31,23 @@ const ScoreUpdateSchema = {
   properties: ScoreBaseProperties
 }
 
+const ScoreClass = {
+  type: 'object',
+  properties: {
+    class_id: {
+      type: 'string',
+      description: 'ID lớp'
+    },
+    content_id: {
+      type: 'string',
+      description: 'ID nội dung'
+    }
+  }
+}
+
 module.exports = {
   ScoreCreateSchema,
   ScoreUpdateSchema,
-  ScoreBaseProperties
+  ScoreBaseProperties,
+  ScoreClass
 }

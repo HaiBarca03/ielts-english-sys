@@ -103,11 +103,80 @@ const deleteScore = async (score_id) => {
   }
 }
 
+const getScoreStatsByContentId = async (content_id) => {
+  const scores = await Score.findAll({ where: { content_id } })
+
+  if (!scores || scores.length === 0) {
+    return {
+      avgScore: 0,
+      totalScores: 0,
+      scoreCounts: {}
+    }
+  }
+
+  let sum = 0
+  let scoreCounts = {}
+
+  for (const scoreObj of scores) {
+    const value = scoreObj.score
+    sum += value
+
+    const rounded = parseFloat(value.toFixed(2))
+    scoreCounts[rounded] = (scoreCounts[rounded] || 0) + 1
+  }
+
+  const avgScore = parseFloat((sum / scores.length).toFixed(2))
+
+  return {
+    avgScore,
+    totalScores: scores.length,
+    scoreCounts
+  }
+}
+
+const getScoreStatsByContentAndClass = async (content_id, class_id) => {
+  const scores = await Score.findAll({
+    where: {
+      content_id,
+      class_id
+    }
+  })
+
+  if (!scores || scores.length === 0) {
+    return {
+      avgScore: 0,
+      totalScores: 0,
+      scoreCounts: {}
+    }
+  }
+
+  let sum = 0
+  let scoreCounts = {}
+
+  for (const scoreObj of scores) {
+    const value = scoreObj.score
+    sum += value
+
+    const rounded = parseFloat(value.toFixed(2))
+    scoreCounts[rounded] = (scoreCounts[rounded] || 0) + 1
+  }
+
+  const avgScore = parseFloat((sum / scores.length).toFixed(2))
+
+  return {
+    avgScore,
+    totalScores: scores.length,
+    scoreCounts
+  }
+}
+
 module.exports = {
   createScore,
   getScoreById,
   updateScore,
   getScoreByUser,
   getScoresByClassId,
-  deleteScore
+  deleteScore,
+  getScoreStatsByContentId,
+  getScoreStatsByContentAndClass
 }

@@ -5,7 +5,9 @@ const {
   updateScore,
   getScoreByUser,
   getScoresByClass,
-  deleteScoreById
+  deleteScoreById,
+  getScoreStats,
+  getScoreStatsClass
 } = require('../controllers/ScoreController')
 const { authorizeAdminTeacher, authorizeUser } = require('../middlewares/auth')
 
@@ -13,6 +15,12 @@ router.post('/', authorizeAdminTeacher, createScore)
 router.put('/:score_id', authorizeAdminTeacher, updateScore)
 router.get('/user/:user_id', authorizeUser, getScoreByUser)
 router.get('/class/:class_id', authorizeAdminTeacher, getScoresByClass)
+router.get('/score/:content_id', authorizeAdminTeacher, getScoreStats)
+router.get(
+  '/score-class/:class_id/:content_id',
+  authorizeAdminTeacher,
+  getScoreStatsClass
+)
 router.delete('/:score_id', authorizeAdminTeacher, deleteScoreById)
 
 module.exports = router
@@ -72,6 +80,51 @@ module.exports = router
  *         description: Number of items per page (default is 10)
  *         schema:
  *           type: integer
+ *     responses:
+ *       200:
+ *         description: Paginated list of contents by program
+ */
+
+/**
+ * @swagger
+ * /score/score-class/{class_id}/{content_id}:
+ *   get:
+ *     summary: Get score by class ID with optional type filter and pagination
+ *     tags: [Scores]
+ *     parameters:
+ *       - in: path
+ *         name: content_id
+ *         required: true
+ *         description: content ID
+ *       - in: path
+ *         name: class_id
+ *         required: true
+ *         description: class ID
+ *     responses:
+ *       200:
+ *         description: Paginated list of contents by program
+ */
+
+/**
+ * @swagger
+ * /score/score/{content_id}:
+ *   get:
+ *     summary: Get score by content ID with optional type filter and pagination
+ *     tags: [Scores]
+ *     parameters:
+ *       - in: path
+ *         name: content_id
+ *         required: true
+ *         description: ID of the content
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: type
+ *         required: false
+ *         description: Filter by content type (Lesson, Test, Practice)
+ *         schema:
+ *           type: string
+ *           enum: [Lesson, Test, Practice]
  *     responses:
  *       200:
  *         description: Paginated list of contents by program

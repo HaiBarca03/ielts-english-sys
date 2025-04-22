@@ -169,10 +169,54 @@ const deleteScoreById = async (req, res) => {
   }
 }
 
+const getScoreStats = async (req, res) => {
+  try {
+    const { content_id } = req.params
+
+    if (!content_id) {
+      return res.status(400).json({ message: 'Missing content_id' })
+    }
+    console.log('content_id', content_id)
+    const checkContent = await ContentService.getContentById(content_id)
+    if (!checkContent) {
+      return res.status(400).json({ message: 'Content not found' })
+    }
+
+    const stats = await scoreService.getScoreStatsByContentId(content_id)
+
+    res.json(stats)
+  } catch (error) {
+    console.error('Error getting score stats:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+const getScoreStatsClass = async (req, res) => {
+  try {
+    const { content_id, class_id } = req.params
+
+    if (!content_id || !class_id) {
+      return res.status(400).json({ message: 'Missing content_id or class_id' })
+    }
+
+    const stats = await scoreService.getScoreStatsByContentAndClass(
+      content_id,
+      class_id
+    )
+
+    res.json(stats)
+  } catch (error) {
+    console.error('Error getting score stats:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
 module.exports = {
   createScore,
   updateScore,
   getScoreByUser,
   getScoresByClass,
-  deleteScoreById
+  deleteScoreById,
+  getScoreStats,
+  getScoreStatsClass
 }

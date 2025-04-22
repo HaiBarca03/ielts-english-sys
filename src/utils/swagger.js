@@ -33,7 +33,8 @@ const {
 const {
   ScoreCreateSchema,
   ScoreUpdateSchema,
-  ScoreBaseProperties
+  ScoreBaseProperties,
+  ScoreClass
 } = require('../swagger/score.schema')
 const {
   UserUpdateSchema,
@@ -211,6 +212,7 @@ const swaggerDefinition = {
       // Các schema cho score
       ScoreCreate: ScoreCreateSchema,
       ScoreUpdate: ScoreUpdateSchema,
+      ScoreClass: ScoreClass,
       Score: {
         type: 'object',
         properties: {
