@@ -1,0 +1,49 @@
+.header-custom-bg .ant-table-thead > tr > th {
+  background-color: #6e99c2 !important;
+  color: white !important;
+  font-weight: bold;
+  padding: 20px 15px ;
+}
+.header-custom-bg .ant-table-tbody > tr > td {
+  background-color: #f2f0f1; 
+}
+.ant-pagination-item {
+  background-color: #ffffff00 !important;
+  border: none !important;
+}
+.ant-pagination-item-active {
+  background-color: #f2f0f1 !important;
+  font-weight: bold;
+  border: none !important;
+}
+.ant-pagination-item a {
+  color: #000 !important; 
+}
+.ant-pagination-item-active a {
+  color: #000 !important; 
+}
+.header-custom-bg{
+  box-shadow: rgba(17, 17, 26, 0.05) 0px 4px 16px, rgba(17, 17, 26, 0.05) 0px 8px 32px;
+  background: #6e99c2;
+}
+.table-title{
+  white-space: nowrap; 
+  overflow: hidden;    
+  text-overflow: ellipsis;
+  
+}
+.glow-button {
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+  background: #6e99c2;
+}
+
+.glow-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(24, 144, 255, 0.6);
+}
+
+.glow-button:active {
+  transform: scale(0.97);
+  box-shadow: 0 0 6px rgba(24, 144, 255, 0.9);
+}

@@ -1,0 +1,12 @@
+.dashboard-section-title {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.ant-row {
+  width: 100%;
+}
+
+.dashboard-container .ant-col {
+  padding: 0;
+}
