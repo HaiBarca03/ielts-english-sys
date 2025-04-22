@@ -64,13 +64,7 @@ const getAttendancesByClass = async (req, res) => {
     if (!checkClass) {
       return res.status(404).json({ message: 'Class not found' })
     }
-
-    if (!isInClass) {
-      return res.status(403).json({
-        message: 'User does not belong to this class or schedule'
-      })
-    }
-
+    
     const attendances = await AttendanceService.getAttendancesByClassId(
       class_id,
       page,
