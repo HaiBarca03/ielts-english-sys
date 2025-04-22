@@ -8,7 +8,8 @@ const {
   deleteManyUsers,
   getClassByUser,
   getContentForUser,
-  getUserRoles
+  getUserRoles,
+  getMyUser
 } = require('../controllers/UserController')
 const { authorizeAdmin, authorizeUser } = require('../middlewares/auth')
 const { uploadFiles } = require('../middlewares/uploadCloudinary')
@@ -17,6 +18,7 @@ const router = express.Router()
 router.post('/register', authorizeAdmin, uploadFiles, registerUser)
 router.post('/login', loginUser)
 router.get('/profile', authorizeUser, getProfile)
+router.get('/my-class', authorizeUser, getMyUser)
 router.get('/user-class/:userId', authorizeAdmin, getClassByUser)
 router.get('/roles', getUserRoles)
 router.put('/:id', authorizeUser, uploadFiles, updateUser)
@@ -47,6 +49,17 @@ module.exports = router
  *         schema:
  *           type: string
  *           enum: [Student, Teacher, Admin]
+ *     responses:
+ *       200:
+ *         description: Class by user
+ */
+
+/**
+ * @swagger
+ * /account/my-class:
+ *   get:
+ *     summary: Get class by user
+ *     tags: [Users]
  *     responses:
  *       200:
  *         description: Class by user

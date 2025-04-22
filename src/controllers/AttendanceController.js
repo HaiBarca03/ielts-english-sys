@@ -5,22 +5,23 @@ const UserService = require('../services/UserService')
 
 const createAttendance = async (req, res) => {
   try {
-    const { schedule_id, user_id, status, date } = req.body
+    const { schedule_id, user_id, status } = req.body
 
-    if (!schedule_id || !user_id || !date) {
+    if (!schedule_id || !user_id) {
       return res.status(400).json({ message: 'Missing required fields' })
-    }
-
-    const today = new Date().toISOString().split('T')[0]
-    if (date !== today) {
-      return res.status(400).json({
-        message: 'Attendance date must be today'
-      })
     }
 
     const schedule = await Schedule.findByPk(schedule_id)
     if (!schedule) {
       return res.status(404).json({ message: 'Schedule not found' })
+    }
+    const scheduleData = schedule.get({ plain: true })
+
+    const today = new Date().toISOString().split('T')[0]
+    if (scheduleData.date !== today) {
+      return res.status(400).json({
+        message: 'Attendance date must be today'
+      })
     }
 
     const isInClass = await ClassService.checkUserInClass(
@@ -37,7 +38,7 @@ const createAttendance = async (req, res) => {
       schedule_id,
       user_id,
       status,
-      date
+      date: scheduleData.date
     })
 
     return res.status(201).json({
