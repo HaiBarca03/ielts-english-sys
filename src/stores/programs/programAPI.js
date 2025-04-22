@@ -11,6 +11,27 @@ import {
   updateSuccess,
 } from './programSlice';
 
+export const fetchRecentPrograms = () => async (dispatch) => {
+  dispatch(getRequest());
+  try {
+    const config = getAuthConfig();
+    const result = await axios.get('/programs', {
+      params: { 
+        page: 1, 
+        limit: 3, 
+        sort: 'created_at:desc' 
+      },...config,
+    });
+    if (result.data?.items) {
+      dispatch(getSuccess({ recentPrograms: result.data.items }));
+      return result.data.items;
+    }
+    dispatch(getFailed('Invalid API response'));
+  } catch (error) {
+    console.error('Error fetching recent programs:', error);
+    dispatch(getError(error.message));
+  }
+};
 
 const fetchPrograms = (page = 1, limit = 10) => async (dispatch) => {
   dispatch(getRequest());

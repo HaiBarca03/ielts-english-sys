@@ -16,19 +16,23 @@ const {
 const fetchAllPayments = (page = 1, limit = 10) => async (dispatch) => {
   dispatch(getRequest());
   try {
+    const config = getAuthConfig(); 
     const result = await axios.get('/payment', {
-      params: { page, limit },
+      params: { page, limit }, 
+      ...config, 
     });
-    if (result.data.message) {
-      dispatch(getFailed(result.data.message));
-    } else {
+
+    if (result.data && result.data.items) {
       dispatch(getSuccess(result.data));
+    } else {
+      console.error('Invalid API response:', result.data);
+      dispatch(getFailed('Invalid API response'));
     }
   } catch (error) {
+    console.error('Error fetching payments:', error);
     dispatch(getError(error.message));
   }
 };
-
 const fetchPaymentById = (paymentId) => async (dispatch) => {
   dispatch(getRequest());
   try {

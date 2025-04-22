@@ -15,7 +15,28 @@ import {
 import { getAuthConfig } from '../authConfig';
 
 
-
+export const fetchRecentClasses = () => async (dispatch) => {
+  dispatch(getRequest());
+  try {
+    const config = getAuthConfig();
+    const result = await axios.get('/class', {
+      params: { 
+        page: 1, 
+        limit: 5, 
+        sort: 'created_at:desc' 
+      },
+      ...config,
+    });
+    if (result.data?.classes) {
+      dispatch(getSuccess({ recentClasses: result.data.classes }));
+      return result.data.classes;
+    }
+    dispatch(getFailed('Invalid API response'));
+  } catch (error) {
+    console.error('Error fetching recent classes:', error);
+    dispatch(getError(error.message));
+  }
+};
 // Get all classes with pagination
 export const fetchClasses = (page = 1, limit = 10, search = '') => async (dispatch) => {
   dispatch(getRequest());
