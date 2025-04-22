@@ -49,7 +49,10 @@ const getUserClasses = async (userId) => {
       }
     ]
   })
-  return user.Classes
+  if (!user || !user.Classes) {
+    return null
+  }
+  return user?.Classes
 }
 
 const checkUser = async (user_id, role) => {

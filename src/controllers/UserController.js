@@ -216,7 +216,23 @@ const getClassByUser = async (req, res) => {
   const { userId } = req.params
   try {
     const userClass = await UserService.getUserClasses(userId)
+    if (!userClass) {
+      return res.status(404).json({ message: 'User classes not found' })
+    }
+    return res.status(200).json({ userClass: userClass })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: 'Server error' })
+  }
+}
 
+const getMyUser = async (req, res) => {
+  const userId = req.user.user_id
+  try {
+    const userClass = await UserService.getUserClasses(userId)
+    if (!userClass || userClass.length === 0) {
+      return res.status(404).json({ message: 'User classes not found' })
+    }
     return res.status(200).json({ userClass: userClass })
   } catch (error) {
     console.error(error)
@@ -286,5 +302,6 @@ module.exports = {
   deleteManyUsers,
   getClassByUser,
   getContentForUser,
-  getUserRoles
+  getUserRoles,
+  getMyUser
 }
