@@ -14,20 +14,21 @@ import { getAuthConfig } from '../authConfig';
 
 
 
-export const fetchSchedules = (page = 1, limit = 10, filters = {}) => async (dispatch) => {
+export const fetchSchedules = (page, limit , filters = {}) => async (dispatch) => {
     dispatch(getRequest());
     try {
+      const config = getAuthConfig();
       const params = new URLSearchParams({
         page,
         limit,
-        ...filters
+        ...filters,config
       }).toString();
   
       const result = await axios.get(`/schedule?${params}`, getAuthConfig());
   
       if (result.status === 200 && result.data) {
-        dispatch(getSuccess(result.data));
-        return result.data;
+        dispatch(getSuccess(result.data.schedules))
+        return result.data.schedules;
       } else {
         dispatch(getFailed(result.data.message || 'Failed to fetch schedules'));
         message.error(result.data.message || 'Failed to fetch schedules');

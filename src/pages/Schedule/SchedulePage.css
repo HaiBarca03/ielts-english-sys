@@ -1,27 +1,31 @@
-.schedule-container {
-  padding: 16px;
-  background-color: #f5f5f5;
-  min-height: 100vh;
+.calendar-container {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.rbc-event {
+  min-height: 22px;
+  cursor: pointer;
+}
+
+.rbc-toolbar button {
+  color: #555;
+  border: 1px solid #d9d9d9;
+}
+
+.rbc-toolbar button:hover {
+  color: #1890ff;
+  border-color: #1890ff;
+}
+
+.schedule-header {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .schedule-title {
-  text-align: center;
-  margin-bottom: 24px;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.ant-card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.ant-table {
-  margin-top: 16px;
-}
-
-.calendar-container {
-  background: white;
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #1890ff;
+  font-weight: 500;
 }

@@ -1,0 +1,21 @@
+.enhanced-calendar {
+  padding: 20px;
+}
+
+.rbc-event:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.custom-event {
+  padding: 4px;
+}
+
+.event-title {
+  font-weight: bold;
+}
+
+.event-time,
+.event-room {
+  font-size: 0.85em;
+}
