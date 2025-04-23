@@ -278,15 +278,15 @@ const getUserRoles = async (req, res) => {
   try {
     const { role } = req.query
 
-    const users = await UserService.getUsersByRole(role)
+    const { count, users } = await UserService.getUsersByRole(role)
 
-    if (users.length === 0) {
+    if (count === 0) {
       return res
         .status(404)
         .json({ message: `No users found with role ${role}` })
     }
 
-    res.status(200).json({ users })
+    res.status(200).json({ count, users })
   } catch (err) {
     console.error('Error fetching users by role:', err)
     res.status(500).json({ message: 'Failed to get users by role' })

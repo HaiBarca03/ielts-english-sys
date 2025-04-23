@@ -64,7 +64,7 @@ const getAttendancesByClass = async (req, res) => {
     if (!checkClass) {
       return res.status(404).json({ message: 'Class not found' })
     }
-    
+
     const attendances = await AttendanceService.getAttendancesByClassId(
       class_id,
       page,
