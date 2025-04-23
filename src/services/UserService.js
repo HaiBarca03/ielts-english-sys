@@ -70,7 +70,7 @@ const getUsersByRole = async (role) => {
   if (role) whereClause.role = role
 
   try {
-    const users = await User.findAll({
+    const { count, rows } = await User.findAndCountAll({
       where: whereClause,
       include: [
         {
@@ -80,7 +80,7 @@ const getUsersByRole = async (role) => {
       ]
     })
 
-    return users
+    return { count, users: rows }
   } catch (error) {
     throw new Error('Error fetching users: ' + error.message)
   }
