@@ -15,11 +15,12 @@ const DashboardPage = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState(null);
+  const [countStudents, setCountStudents] = useState(0);
+  const [countTeachers, setCountTeachers] = useState(0);
 
   const { paymentList } = useSelector((state) => state.payment);
   const { classesList } = useSelector((state) => state.class);
   const { programsList } = useSelector((state) => state.program);
-  const {  usersList } = useSelector((state) => state.user);
   const [recentClasses, setRecentClasses] = useState([]);
   const [recentPrograms, setRecentPrograms] = useState([]);
 
@@ -29,18 +30,23 @@ const DashboardPage = () => {
       setFetchError(null);
 
       try {
-        const [classes, programs] = await Promise.all([
+        const [classes, programs, studentsResponse, teachersResponse] = await Promise.all([
           dispatch(fetchRecentClasses()),
           dispatch(fetchRecentPrograms()),
+          dispatch(getStudentByRole()),
+          dispatch(getTeacherByRole()),
         ]);
-        setRecentClasses(classes );
-        setRecentPrograms(programs );
+        
+        setRecentClasses(classes);
+        setRecentPrograms(programs);
+        
+        setCountStudents(studentsResponse?.count || 0);
+        setCountTeachers(teachersResponse?.count || 0);
+
         await Promise.all([
           dispatch(fetchAllPayments()),
           dispatch(fetchClasses()),
           dispatch(fetchPrograms()),
-          dispatch(getStudentByRole()),
-          dispatch(getTeacherByRole()),
         ]);
       } catch (error) {
         console.error('Failed to load dashboard data:', error);
@@ -53,8 +59,6 @@ const DashboardPage = () => {
     loadData();
   }, [dispatch]);
 
-
- 
   if (loading) {
     return (
       <div className="dashboard-loading">
@@ -71,18 +75,11 @@ const DashboardPage = () => {
     );
   }
 
-
-
-  const usersArray = usersList.users || [];
-
-  const countStudents = usersArray.filter(user => user?.role === 'Student').length;
-  const countTeachers = usersArray.filter(user => user?.role === 'Teacher').length;
-
   return (
     <div className="dashboard-container">
       <DashboardHeader />
       <DashboardStats
-         studentCount={countStudents}
+        studentCount={countStudents}
         teacherCount={countTeachers}
         classCount={classesList.totalClasses}
         programCount={programsList.totalItems}
