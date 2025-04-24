@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import ActionBar from '../../components/ActionBar';
 import StudentAdd from '../../components/Student/StudentAdd';
@@ -13,6 +13,7 @@ import UserRemoveFromClass from '../../components/Student/UserRemoveFromClass';
 const StudentPage = () => {
   const { classId } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { usersList = {}, loading: userLoading } = useSelector((state) => state.user);
   const { classDetails, loading: classLoading } = useSelector((state) => state.class);
@@ -103,7 +104,8 @@ const StudentPage = () => {
         disableEdit={selectedItems.length !== 1}
         disableDelete={selectedItems.length === 0}
         showAttendance={false}
-        showScoreEntry={false}
+        onScoreEntry={() => navigate(`/teacher/score-entry`)}
+        showSave = {false}
       />
 
       {classId && (

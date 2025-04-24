@@ -173,7 +173,7 @@ const router = createBrowserRouter([
       {
         path: '/teacher/score-entry',
         element: (
-          <ProtectedRoute allowedRoles={['Teacher']}>
+          <ProtectedRoute allowedRoles={['Teacher', 'Admin']}>
             <ScorePage/>
           </ProtectedRoute>
         ),

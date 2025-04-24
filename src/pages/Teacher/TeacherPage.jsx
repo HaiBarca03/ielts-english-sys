@@ -79,7 +79,7 @@ const TeacherPage = () => {
   return (
     <div className="container p-4 d-flex flex-column" style={{ width: '100%' }}>
       <ActionBar
-        title={classId ? `Danh sách học viên - ${classDetails?.name || ''}` : 'Danh sách học viên'}
+        title={classId ? `Danh sách giáo viên - ${classDetails?.name || ''}` : 'Danh sách giáo viên'}
         linkText={classId ? 'Danh sách lớp học' : 'Trang chủ'}
         to={classId ? '/classes' : '/'}
         onAdd={handleAdd}

@@ -1,25 +1,90 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Table, Card, Tag, Space, Spin} from 'antd';
-import { fetchScoresByUser } from '../../../stores/Score/scoreAPI';
+import { Card, Table, Tag, Spin } from 'antd';
+
+// Mock data
+const mockScoresList = {
+  scores: [
+    {
+      id: '1',
+      subject: 'IELTS Listening',
+      type: 'quiz',
+      score: 7.5,
+      updatedAt: '2025-04-20',
+    },
+    {
+      id: '2',
+      subject: 'IELTS Speaking',
+      type: 'exam',
+      score: 6.5,
+      updatedAt: '2025-04-19',
+    },
+    {
+      id: '3',
+      subject: 'General English',
+      type: 'homework',
+      score: 8.0,
+      updatedAt: '2025-04-18',
+    },
+    {
+      id: '4',
+      subject: 'Business English',
+      type: 'quiz',
+      score: 7.0,
+      updatedAt: '2025-04-17',
+    },
+    {
+      id: '1',
+      subject: 'IELTS Listening',
+      type: 'quiz',
+      score: 7.5,
+      updatedAt: '2025-04-20',
+    },
+    {
+      id: '2',
+      subject: 'IELTS Speaking',
+      type: 'exam',
+      score: 6.5,
+      updatedAt: '2025-04-19',
+    },
+    {
+      id: '3',
+      subject: 'General English',
+      type: 'homework',
+      score: 8.0,
+      updatedAt: '2025-04-18',
+    },
+    {
+      id: '4',
+      subject: 'Business English',
+      type: 'quiz',
+      score: 7.0,
+      updatedAt: '2025-04-17',
+    },
+  ],
+  totalItems: 8,
+};
 
 const ScoreStudentPage = () => {
-  const dispatch = useDispatch();
-  const { scoresList, loading } = useSelector((state) => state.scores);
-
-  const [userId] = useState('12345'); // ID của sinh viên (có thể lấy từ auth hoặc props)
+  const [scoresList, setScoresList] = useState(mockScoresList);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
 
+  // Giả lập lấy dữ liệu
   useEffect(() => {
-    dispatch(fetchScoresByUser(userId, '', currentPage, pageSize));
-  }, [dispatch, userId, currentPage, pageSize]);
+    setLoading(true);
+    setTimeout(() => {
+      setScoresList(mockScoresList);
+      setLoading(false);
+    }, 500); // Giả lập độ trễ 500ms
+  }, [currentPage]);
 
   const columns = [
     {
       title: 'Môn học',
       dataIndex: 'subject',
       key: 'subject',
+      render: (text) => <strong>{text}</strong>,
     },
     {
       title: 'Loại điểm',
@@ -38,6 +103,7 @@ const ScoreStudentPage = () => {
       title: 'Điểm',
       dataIndex: 'score',
       key: 'score',
+      render: (score) => <span style={{ color: score >= 7 ? '#389e0d' : '#cf1322' }}>{score.toFixed(1)}</span>,
     },
     {
       title: 'Ngày cập nhật',
@@ -55,10 +121,22 @@ const ScoreStudentPage = () => {
   };
 
   return (
-    <div style={{ padding: '16px' }}>
-      <Card title="Thông tin điểm số" bordered={false}>
+    <div style={{ padding: '24px', background: '#f0f2f5', minHeight: '100vh' }}>
+      <Card
+        title={
+          <span style={{ fontSize: '20px', fontWeight: 'bold' }}>
+            Thông tin điểm số
+          </span>
+        }
+        bordered={false}
+        style={{
+          borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+          overflow: 'hidden',
+        }}
+      >
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '20px' }}>
+          <div style={{ textAlign: 'center', padding: '40px' }}>
             <Spin size="large" />
           </div>
         ) : scoresList?.scores?.length > 0 ? (
@@ -68,10 +146,15 @@ const ScoreStudentPage = () => {
             rowKey="id"
             pagination={pagination}
             bordered
+            style={{ background: '#fff' }}
+            scroll={{ x: true }}
+            locale={{ emptyText: 'Không có dữ liệu điểm số' }}
           />
         ) : (
-          <div style={{ textAlign: 'center', padding: '20px' }}>
-            <p>Không có dữ liệu điểm số.</p>
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <p style={{ fontSize: '16px', color: '#888' }}>
+              Không có dữ liệu điểm số.
+            </p>
           </div>
         )}
       </Card>

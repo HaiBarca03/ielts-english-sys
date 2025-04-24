@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Table, Button, Tag, Space, Card, Avatar, Input, message, DatePicker, Select } from 'antd';
 import { 
   CheckCircleOutlined, 
@@ -11,8 +10,6 @@ import {
   LoadingOutlined
 } from '@ant-design/icons';
 import moment from 'moment';
-import { fetchAttendanceByClass, createAttendance, updateAttendance } from '../../../stores/Attendance/attendanceAPI';
-import { getMyClasses } from '../../../stores/users/userAPI';
 
 const { Option } = Select;
 
@@ -28,78 +25,94 @@ const STATUS_CONFIG = {
   [ATTENDANCE_STATUS.LATE]: { color: 'orange', text: 'Đi muộn', icon: <CheckCircleOutlined /> }
 };
 
-const AttendancePage = () => {
-  const dispatch = useDispatch();
-  const { attendanceList, loading } = useSelector((state) => state.attendance);
+// Mock data
+const mockMyClasses = [
+  { class_id: '1', name: 'Tiếng anh giao tiếp' },
+  { class_id: '2', name: 'Toeic 700 đi làm' },
+  { class_id: '3', name: 'Tiếng anh giao tiếp nơi làm việc' },
+];
 
-  const [myClasses, setMyClasses] = useState([]); // 🔥 dùng local state
+const mockAttendanceList = [
+  {
+    id: 'att1',
+    student: {
+      id: 'stu1',
+      name: 'Nguyễn Văn An',
+      studentId: 'STU001',
+      avatar: 'https://i.pravatar.cc/150?u=stu1',
+    },
+    status: 'Present',
+    note: 'Đúng giờ',
+  },
+  {
+    id: 'att2',
+    student: {
+      id: 'stu2',
+      name: 'Trần Thị Bình',
+      studentId: 'STU002',
+      avatar: 'https://i.pravatar.cc/150?u=stu2',
+    },
+    status: 'Absent',
+    note: 'Nghỉ không phép',
+  },
+  {
+    id: 'att3',
+    student: {
+      id: 'stu3',
+      name: 'Lê Văn Cường',
+      studentId: 'STU003',
+      avatar: 'https://i.pravatar.cc/150?u=stu3',
+    },
+    status: 'Late',
+    note: 'Đi muộn 10 phút',
+  },
+];
+
+const AttendancePage = () => {
+  const [myClasses, setMyClasses] = useState(mockMyClasses); // Sử dụng mock data
   const [students, setStudents] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const [selectedClassId, setSelectedClassId] = useState(null); // class_id
+  const [selectedClassId, setSelectedClassId] = useState(null);
   const [attendanceDate, setAttendanceDate] = useState(moment());
   const [isSaving, setIsSaving] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // Lấy danh sách lớp của giáo viên
-  useEffect(() => {
-    const fetchMyClasses = async () => {
-      try {
-        const response = await dispatch(getMyClasses());
-        if (response?.userClass) {
-          setMyClasses(response.userClass);
-        }
-      } catch (error) {
-        message.error('Không thể tải danh sách lớp học');
-        console.error(error);
-      }
-    };
-
-    fetchMyClasses();
-  }, [dispatch]);
-
-  // Fetch điểm danh khi chọn lớp hoặc ngày thay đổi
+  // Giả lập dữ liệu điểm danh khi chọn lớp hoặc ngày thay đổi
   useEffect(() => {
     if (selectedClassId) {
-      const dateStr = attendanceDate.format('YYYY-MM-DD');
-      dispatch(fetchAttendanceByClass(selectedClassId, dateStr));
-    }
-  }, [selectedClassId, attendanceDate, dispatch]);
-
-  // Update students
-  useEffect(() => {
-    if (attendanceList && attendanceList.length > 0) {
-      setStudents(attendanceList.map(item => ({
-        ...item.student,
-        status: item.status,
-        note: item.note,
-        attendanceId: item.id
-      })));
-    } else if (selectedClassId) {
+      setLoading(true);
+      // Giả lập dữ liệu từ mockAttendanceList
+      setTimeout(() => {
+        setStudents(mockAttendanceList.map(item => ({
+          ...item.student,
+          status: item.status,
+          note: item.note,
+          attendanceId: item.id
+        })));
+        setLoading(false);
+      }, 500); // Giả lập độ trễ như khi gọi API
+    } else {
       setStudents([]);
     }
-  }, [attendanceList, selectedClassId]);
+  }, [selectedClassId, attendanceDate]);
 
   const selectedClassName = myClasses.find(cls => cls.class_id === selectedClassId)?.name || 'Chưa chọn lớp';
 
   const handleAttendanceChange = async (record, status, note = '') => {
     setIsSaving(true);
     try {
-      const attendanceData = {
-        schedule_id: selectedClassId,
-        user_id: record.id,
-        status,
-        date: attendanceDate.format('YYYY-MM-DD'),
-        note
-      };
+      // Giả lập cập nhật trạng thái điểm danh
+      console.log(`Cập nhật điểm danh cho ${record.name}: ${status}, Ghi chú: ${note}`);
+      message.success('Cập nhật điểm danh thành công');
 
-      if (record.attendanceId) {
-        await dispatch(updateAttendance(record.attendanceId, attendanceData));
-        message.success('Cập nhật điểm danh thành công');
-      } else {
-        await dispatch(createAttendance(attendanceData));
-        message.success('Điểm danh thành công');
-      }
+      // Cập nhật mock data trong state
+      setStudents(prevStudents =>
+        prevStudents.map(student =>
+          student.id === record.id ? { ...student, status, note } : student
+        )
+      );
     } catch (error) {
-      message.error(error?.response?.data?.message || 'Thao tác thất bại');
+      message.error('Thao tác thất bại');
     } finally {
       setIsSaving(false);
     }

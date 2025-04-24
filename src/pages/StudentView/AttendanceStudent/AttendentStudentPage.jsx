@@ -1,19 +1,69 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Table, Card, Tag, Spin} from 'antd';
-import { fetchAttendanceByUser } from '../../../stores/Attendance/attendanceAPI';
+import { Card, Table, Tag, Spin } from 'antd';
+
+// Mock data
+const mockAttendanceList = {
+  attendances: [
+    {
+      id: '1',
+      date: '2025-04-20',
+      status: 'Có mặt',
+      note: 'Đúng giờ',
+    },
+    {
+      id: '2',
+      date: '2025-04-19',
+      status: 'Vắng mặt',
+      note: 'Nghỉ không phép',
+    },
+    {
+      id: '3',
+      date: '2025-04-18',
+      status: 'Đi trễ',
+      note: 'Muộn 15 phút',
+    },
+    {
+      id: '4',
+      date: '2025-04-17',
+      status: 'Có mặt',
+      note: 'Tham gia đầy đủ',
+    },
+    {
+      id: '5',
+      date: '2025-04-16',
+      status: 'Có mặt',
+      note: 'Tham gia đầy đủ',
+    },
+    {
+      id: '6',
+      date: '2025-04-15',
+      status: 'Có mặt',
+      note: 'Tham gia đầy đủ',
+    },
+    {
+      id: '7',
+      date: '2025-04-14',
+      status: 'Có mặt',
+      note: 'Tham gia đầy đủ',
+    },
+  ],
+  totalItems: 4,
+};
 
 const AttendentStudentPage = () => {
-  const dispatch = useDispatch();
-  const { attendanceList, loading } = useSelector((state) => state.attendance);
-
-  const [userId] = useState('12345'); // ID của sinh viên (có thể lấy từ auth hoặc props)
+  const [attendanceList, setAttendanceList] = useState(mockAttendanceList);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
 
+  // Giả lập lấy dữ liệu
   useEffect(() => {
-    dispatch(fetchAttendanceByUser(userId, currentPage, pageSize));
-  }, [dispatch, userId, currentPage, pageSize]);
+    setLoading(true);
+    setTimeout(() => {
+      setAttendanceList(mockAttendanceList);
+      setLoading(false);
+    }, 500); // Giả lập độ trễ 500ms
+  }, [currentPage]);
 
   const columns = [
     {
@@ -60,10 +110,22 @@ const AttendentStudentPage = () => {
   };
 
   return (
-    <div style={{ padding: '16px' }}>
-      <Card title="Thông tin điểm danh" bordered={false}>
+    <div style={{ padding: '24px', background: '#f0f2f5', minHeight: '100vh' }}>
+      <Card
+        title={
+          <span style={{ fontSize: '20px', fontWeight: 'bold' }}>
+            Thông tin điểm danh
+          </span>
+        }
+        bordered={false}
+        style={{
+          borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+          overflow: 'hidden',
+        }}
+      >
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '20px' }}>
+          <div style={{ textAlign: 'center', padding: '40px' }}>
             <Spin size="large" />
           </div>
         ) : attendanceList?.attendances?.length > 0 ? (
@@ -73,10 +135,15 @@ const AttendentStudentPage = () => {
             rowKey="id"
             pagination={pagination}
             bordered
+            style={{ background: '#fff' }}
+            scroll={{ x: true }}
+            locale={{ emptyText: 'Không có dữ liệu điểm danh' }}
           />
         ) : (
-          <div style={{ textAlign: 'center', padding: '20px' }}>
-            <p>Không có dữ liệu điểm danh.</p>
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <p style={{ fontSize: '16px', color: '#888' }}>
+              Không có dữ liệu điểm danh.
+            </p>
           </div>
         )}
       </Card>

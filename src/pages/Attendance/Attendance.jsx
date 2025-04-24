@@ -1,32 +1,66 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Table, Tag, Button, Space, Card, Input, Select, Modal, Form, message, DatePicker } from 'antd';
-import { EditOutlined, DeleteOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, FileExcelOutlined, UploadOutlined, SaveOutlined } from '@ant-design/icons';
 import moment from 'moment';
-import {
-  fetchAttendanceByClass,
-  createAttendance,
-  updateAttendance,
-  deleteAttendance,
-} from '../../stores/Attendance/attendanceAPI';
 
 const { Option } = Select;
 
-const Attendance = () => {
-  const dispatch = useDispatch();
-  const { attendanceList, loading } = useSelector((state) => state.attendance);
+// Mock data
+const mockClasses = [
+  { id: '1', name: 'Lớp 1' },
+  { id: '2', name: 'Lớp 2' },
+  { id: '3', name: 'Lớp 3' },
+];
 
+const mockAttendanceList = [
+  {
+    key: '1',
+    name: 'Nguyễn Văn An',
+    status: 'Có mặt',
+    date: '2025-04-20',
+  },
+  {
+    key: '2',
+    name: 'Trần Thị Bình',
+    status: 'Vắng mặt',
+    date: '2025-04-20',
+  },
+  {
+    key: '3',
+    name: 'Lê Văn Cường',
+    status: 'Đi trễ',
+    date: '2025-04-20',
+  },
+  {
+    key: '4',
+    name: 'Phạm Thị Duyên',
+    status: 'Có mặt',
+    date: '2025-04-20',
+  },
+];
+
+const Attendance = () => {
   const [selectedClass, setSelectedClass] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentRecord, setCurrentRecord] = useState(null);
   const [form] = Form.useForm();
+  const [attendanceList, setAttendanceList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+  // Giả lập dữ liệu điểm danh khi chọn lớp
   useEffect(() => {
     if (selectedClass) {
-      dispatch(fetchAttendanceByClass(selectedClass));
+      setLoading(true);
+      // Giả lập độ trễ như gọi API
+      setTimeout(() => {
+        setAttendanceList(mockAttendanceList);
+        setLoading(false);
+      }, 500);
+    } else {
+      setAttendanceList([]);
     }
-  }, [dispatch, selectedClass]);
+  }, [selectedClass]);
 
   const handleClassChange = (value) => {
     setSelectedClass(value);
@@ -34,12 +68,6 @@ const Attendance = () => {
 
   const handleSearch = (e) => {
     setSearchText(e.target.value);
-  };
-
-  const handleAdd = () => {
-    setCurrentRecord(null);
-    form.resetFields();
-    setIsModalOpen(true);
   };
 
   const handleEdit = (record) => {
@@ -51,13 +79,11 @@ const Attendance = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (key) => {
     try {
-      await dispatch(deleteAttendance(id));
+      // Giả lập xóa bản ghi
+      setAttendanceList(prevList => prevList.filter(item => item.key !== key));
       message.success('Xóa thành công!');
-      if (selectedClass) {
-        dispatch(fetchAttendanceByClass(selectedClass));
-      }
     } catch (error) {
       message.error('Xóa thất bại!');
     }
@@ -72,22 +98,29 @@ const Attendance = () => {
       };
 
       if (currentRecord) {
-        // Cập nhật bản ghi
-        await dispatch(updateAttendance(currentRecord.key, formattedValues));
+        // Cập nhật bản ghi trong mock data
+        setAttendanceList(prevList =>
+          prevList.map(item =>
+            item.key === currentRecord.key ? { ...item, ...formattedValues } : item
+          )
+        );
         message.success('Cập nhật thành công!');
-      } else {
-        // Thêm mới bản ghi
-        await dispatch(createAttendance({ ...formattedValues, classId: selectedClass }));
-        message.success('Thêm mới thành công!');
       }
 
       setIsModalOpen(false);
-      if (selectedClass) {
-        dispatch(fetchAttendanceByClass(selectedClass));
-      }
     } catch (error) {
       message.error('Lưu thất bại!');
     }
+  };
+
+  const handleImport = () => {
+    // Giả lập chức năng import
+    message.info('Chức năng nhập dữ liệu đang được phát triển!');
+  };
+
+  const handleExport = () => {
+    // Giả lập chức năng export
+    message.info('Chức năng xuất Excel đang được phát triển!');
   };
 
   const filteredData = attendanceList.filter((item) =>
@@ -157,13 +190,22 @@ const Attendance = () => {
       <Card
         title="Quản lý điểm danh"
         extra={
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={handleAdd}
-          >
-            Thêm mới
-          </Button>
+          <Space>
+            <Button
+              type="primary"
+              icon={<UploadOutlined />}
+              onClick={handleImport}
+            >
+              Import
+            </Button>
+            <Button
+              type="primary"
+              icon={<FileExcelOutlined />}
+              onClick={handleExport}
+            >
+              Export
+            </Button>
+          </Space>
         }
       >
         <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between' }}>
@@ -175,9 +217,11 @@ const Attendance = () => {
               value={selectedClass}
               onChange={handleClassChange}
             >
-              <Option value="1">Lớp 10A1</Option>
-              <Option value="2">Lớp 11B2</Option>
-              <Option value="3">Lớp 12C3</Option>
+              {mockClasses.map(cls => (
+                <Option key={cls.id} value={cls.id}>
+                  {cls.name}
+                </Option>
+              ))}
             </Select>
           </Space>
           <Input
@@ -197,7 +241,7 @@ const Attendance = () => {
       </Card>
 
       <Modal
-        title={currentRecord ? 'Chỉnh sửa thông tin điểm danh' : 'Thêm mới điểm danh'}
+        title="Chỉnh sửa thông tin điểm danh"
         visible={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={[

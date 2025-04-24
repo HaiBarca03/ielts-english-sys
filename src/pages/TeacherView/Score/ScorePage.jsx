@@ -1,127 +1,160 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Table, Button, Tag, Space, Card, Input, message, Select, Modal, Form } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, SaveOutlined } from '@ant-design/icons';
-import { fetchScoresByClass, createScore, updateScore, deleteScore } from '../../../stores/Score/scoreAPI';
+import React, { useState} from 'react';
+import { Table, Button, Space, Card, Input, message, Select, Form, InputNumber } from 'antd';
+import { DownloadOutlined, UploadOutlined } from '@ant-design/icons';
+import * as XLSX from 'xlsx';
 
 const { Option } = Select;
 
-const ScorePage = () => {
-  const dispatch = useDispatch();
-  const { scoresList, loading } = useSelector((state) => state.score);
+const mockClasses = [
+  { id: 1, name: 'Lớp 1' },
+  { id: 2, name: 'Lớp 2' },
+];
 
-  const [students, setStudents] = useState([]);
+const mockStudents = [
+  { id: 'S1', name: 'Nguyễn Văn A', classes: [{ id: 1 }] },
+  { id: 'S2', name: 'Trần Thị B', classes: [{ id: 1 }] },
+  { id: 'S3', name: 'Lê Minh C', classes: [{ id: 2 }] },
+  { id: 'S4', name: 'Phạm Thanh D', classes: [{ id: 2 }] },
+  { id: 'S5', name: 'Hoàng Đức E', classes: [{ id: 1 }] },
+  { id: 'S6', name: 'Bùi Thị F', classes: [{ id: 1 }] },
+  { id: 'S7', name: 'Đỗ Quang G', classes: [{ id: 2 }] },
+  { id: 'S8', name: 'Vũ Minh H', classes: [{ id: 2 }] },
+  { id: 'S9', name: 'Nguyễn Hoàng I', classes: [{ id: 1 }] },
+  { id: 'S10', name: 'Lê Hữu K', classes: [{ id: 2 }] },
+];
+
+const mockScores = [
+  { studentId: 'S1', subject: 'math', type: 'exam', score: 8 },
+  { studentId: 'S2', subject: 'math', type: 'exam', score: 7 },
+  { studentId: 'S3', subject: 'math', type: 'exam', score: 9 },
+  { studentId: 'S4', subject: 'math', type: 'exam', score: 6 },
+  { studentId: 'S5', subject: 'math', type: 'exam', score: 10 },
+  { studentId: 'S6', subject: 'math', type: 'exam', score: 5 },
+  { studentId: 'S7', subject: 'math', type: 'exam', score: 7.5 },
+  { studentId: 'S8', subject: 'math', type: 'exam', score: 6.5 },
+  { studentId: 'S9', subject: 'math', type: 'exam', score: 8.5 },
+  { studentId: 'S10', subject: 'math', type: 'exam', score: 7 },
+];
+
+const ScorePage = () => {
   const [selectedClassId, setSelectedClassId] = useState(null);
   const [searchText, setSearchText] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentScore, setCurrentScore] = useState(null);
+  const [editingKey, setEditingKey] = useState('');
   const [form] = Form.useForm();
 
-  // Fetch scores when class changes
-  useEffect(() => {
-    if (selectedClassId) {
-      dispatch(fetchScoresByClass(selectedClassId));
-    }
-  }, [selectedClassId, dispatch]);
+  const [studentsList, setStudentsList] = useState(mockStudents);
+  const [classesList, setClassesList] = useState(mockClasses);
+  const [scoresList, setScoresList] = useState(mockScores);
 
-  // Update students list when scoresList changes
-  useEffect(() => {
-    if (scoresList && scoresList.length > 0) {
-      setStudents(scoresList);
-    } else {
-      setStudents([]);
-    }
-  }, [scoresList]);
+  const classStudents = studentsList.filter(student => 
+    student.classes.some(c => c.id === selectedClassId)
+  );
+
+  const mergedData = classStudents.map(student => {
+    const studentScores = scoresList.filter(score => score.studentId === student.id);
+    return {
+      key: student.id,
+      ...student,
+      scores: studentScores,
+    };
+  });
 
   const handleClassChange = (value) => {
     setSelectedClassId(value);
+    setEditingKey('');
   };
 
-  const handleSearch = (e) => {
-    setSearchText(e.target.value);
+  const isEditing = (record) => record.key === editingKey;
+
+  const edit = (record) => {
+    form.setFieldsValue({
+      name: record.name,
+      studentId: record.id,
+      ...record.scores.reduce((acc, score) => {
+        acc[`${score.subject}_${score.type}`] = score.score;
+        return acc;
+      }, {})
+    });
+    setEditingKey(record.key);
   };
 
-  const handleAddScore = () => {
-    setCurrentScore(null);
-    form.resetFields();
-    setIsModalOpen(true);
-  };
-
-  const handleEditScore = (record) => {
-    setCurrentScore(record);
-    form.setFieldsValue(record);
-    setIsModalOpen(true);
-  };
-
-  const handleDeleteScore = async (id) => {
-    await dispatch(deleteScore(id));
-    message.success('Xóa điểm thành công');
-    dispatch(fetchScoresByClass(selectedClassId));
-  };
-
-  const handleSaveScore = async () => {
+  const save = async (id) => {
     try {
-      const values = await form.validateFields();
-      if (currentScore) {
-        await dispatch(updateScore(currentScore.id, values));
-        message.success('Cập nhật điểm thành công');
-      } else {
-        await dispatch(createScore({ ...values, classId: selectedClassId }));
-        message.success('Thêm điểm thành công');
-      }
-      setIsModalOpen(false);
-      dispatch(fetchScoresByClass(selectedClassId));
-    } catch (error) {
-      message.error('Vui lòng kiểm tra lại thông tin');
+      const row = await form.validateFields();
+      const scoresToUpdate = Object.entries(row)
+        .filter(([key]) => key.includes('_'))
+        .map(([key, value]) => {
+          const [subject, type] = key.split('_');
+          return {
+            studentId: id,
+            subject,
+            type,
+            score: value,
+            classId: selectedClassId
+          };
+        });
+
+      // mock saving the updated scores
+      setScoresList(prevScores => [
+        ...prevScores.filter(score => !scoresToUpdate.some(update => update.studentId === score.studentId && update.subject === score.subject && update.type === score.type)),
+        ...scoresToUpdate,
+      ]);
+      message.success('Cập nhật điểm thành công');
+      setEditingKey('');
+    } catch (errInfo) {
+      console.error('Validate Failed:', errInfo);
+      message.error('Cập nhật điểm thất bại');
     }
   };
 
-  const filteredStudents = students.filter((student) =>
-    student.name?.toLowerCase().includes(searchText.toLowerCase())
-  );
-
   const columns = [
+    {
+      title: 'Mã HS',
+      dataIndex: 'id',
+      key: 'id',
+      width: 100,
+      fixed: 'left',
+    },
     {
       title: 'Họ và tên',
       dataIndex: 'name',
       key: 'name',
+      width: 200,
+      fixed: 'left',
+      render: (text) => <span>{text || 'N/A'}</span>,
     },
     {
-      title: 'Môn học',
-      dataIndex: 'subject',
-      key: 'subject',
-    },
-    {
-      title: 'Loại điểm',
-      dataIndex: 'type',
-      key: 'type',
-      render: (type) => {
-        const colorMap = {
-          quiz: 'blue',
-          exam: 'red',
-          homework: 'green',
-        };
-        return <Tag color={colorMap[type]}>{type.toUpperCase()}</Tag>;
+      title: 'Test',
+      dataIndex: 'math_exam',
+      key: 'math_exam',
+      render: (_, record) => {
+        const editing = isEditing(record);
+        const score = record.scores?.find(s => s.subject === 'math' && s.type === 'exam');
+        return editing ? (
+          <Form.Item name="math_exam" style={{ margin: 0 }}>
+            <InputNumber min={0} max={10} step={0.1} style={{ width: '100%' }} />
+          </Form.Item>
+        ) : (
+          <span>{score?.score ?? '-'}</span>
+        );
       },
     },
     {
-      title: 'Điểm',
-      dataIndex: 'score',
-      key: 'score',
-    },
-    {
       title: 'Hành động',
-      key: 'actions',
-      render: (_, record) => (
-        <Space>
-          <Button icon={<EditOutlined />} onClick={() => handleEditScore(record)}>
-            Sửa
-          </Button>
-          <Button icon={<DeleteOutlined />} danger onClick={() => handleDeleteScore(record.id)}>
-            Xóa
-          </Button>
-        </Space>
-      ),
+      key: 'action',
+      fixed: 'right',
+      width: 150,
+      render: (_, record) => {
+        const editable = isEditing(record);
+        return editable ? (
+          <Space>
+            <Button onClick={() => save(record.id)} type="primary" size="small">Lưu</Button>
+            <Button onClick={() => setEditingKey('')} size="small">Hủy</Button>
+          </Space>
+        ) : (
+          <Button onClick={() => edit(record)} size="small">Sửa</Button>
+        );
+      },
     },
   ];
 
@@ -129,11 +162,7 @@ const ScorePage = () => {
     <div className="score-page" style={{ padding: '20px' }}>
       <Card
         title="Quản lý điểm số"
-        extra={
-          <Button icon={<PlusOutlined />} type="primary" onClick={handleAddScore}>
-            Thêm điểm
-          </Button>
-        }
+        extra={<Button icon={<DownloadOutlined />} onClick={() => console.log('Export Excel')}>Xuất Excel</Button>}
       >
         <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between' }}>
           <Space>
@@ -143,80 +172,34 @@ const ScorePage = () => {
               style={{ width: 200 }}
               value={selectedClassId}
               onChange={handleClassChange}
-              loading={loading}
             >
-              {/* Thay thế bằng danh sách lớp học thực tế */}
-              <Option value="1">Lớp 10A1</Option>
-              <Option value="2">Lớp 11B2</Option>
-              <Option value="3">Lớp 12C3</Option>
+              {classesList.map(cls => (
+                <Option key={cls.id} value={cls.id}>{cls.name}</Option>
+              ))}
             </Select>
           </Space>
-
-          <Input
+          <Input.Search
             placeholder="Tìm kiếm học sinh..."
             value={searchText}
-            onChange={handleSearch}
+            onChange={(e) => setSearchText(e.target.value)}
             style={{ width: 250 }}
           />
         </div>
 
-        <Table
-          columns={columns}
-          dataSource={filteredStudents}
-          rowKey="id"
-          loading={loading}
-          pagination={{ pageSize: 10 }}
-        />
-      </Card>
-
-      <Modal
-        title={currentScore ? 'Sửa điểm' : 'Thêm điểm'}
-        visible={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setIsModalOpen(false)}>
-            Hủy
-          </Button>,
-          <Button key="save" type="primary" icon={<SaveOutlined />} onClick={handleSaveScore}>
-            Lưu
-          </Button>,
-        ]}
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item
-            label="Họ và tên"
-            name="name"
-            rules={[{ required: true, message: 'Vui lòng nhập họ và tên' }]}
-          >
-            <Input placeholder="Nhập họ và tên" />
-          </Form.Item>
-          <Form.Item
-            label="Môn học"
-            name="subject"
-            rules={[{ required: true, message: 'Vui lòng nhập môn học' }]}
-          >
-            <Input placeholder="Nhập môn học" />
-          </Form.Item>
-          <Form.Item
-            label="Loại điểm"
-            name="type"
-            rules={[{ required: true, message: 'Vui lòng chọn loại điểm' }]}
-          >
-            <Select placeholder="Chọn loại điểm">
-              <Option value="quiz">Quiz</Option>
-              <Option value="exam">Exam</Option>
-              <Option value="homework">Homework</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label="Điểm"
-            name="score"
-            rules={[{ required: true, message: 'Vui lòng nhập điểm' }]}
-          >
-            <Input type="number" placeholder="Nhập điểm" min={0} max={100} />
-          </Form.Item>
+        <Form form={form} component={false}>
+          <Table
+            columns={columns}
+            dataSource={mergedData.filter(item => 
+              !searchText || 
+              item.name.toLowerCase().includes(searchText.toLowerCase()) ||
+              item.id.toString().includes(searchText)
+            )}
+            rowKey="id"
+            pagination={{ pageSize: 10 }}
+            bordered
+          />
         </Form>
-      </Modal>
+      </Card>
     </div>
   );
 };
