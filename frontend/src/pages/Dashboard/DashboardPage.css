@@ -1,0 +1,20 @@
+.dashboard-section-title {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.ant-row {
+  width: 100%;
+}
+
+.dashboard-container .ant-col {
+  padding: 0;
+}
+a {
+  text-decoration: none;
+}
+.dashboard-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
